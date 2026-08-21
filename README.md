@@ -99,11 +99,6 @@ robots and future trends
 | 13 | Hyperparameter tuning using grid search | V |
 | 14 | Mini project — an AI solution for robotics, automation or a smart system | VI |
 
-Each practical ships as two notebooks: a **student** copy with `# TODO` gaps to
-complete, and an **instructor** copy with the gaps filled and teaching notes
-attached. Both run offline — datasets are either bundled with scikit-learn or
-generated inside the notebook, so no internet connection is required.
-
 ---
 
 ## Reading
@@ -127,6 +122,3 @@ generated inside the notebook, so no internet connection is required.
 
 ---
 
-
-*Maintained for teaching use. Question banks and assessment material are
-confidential and are deliberately not included in this repository.*
