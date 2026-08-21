@@ -1,124 +1,95 @@
 # CSE252 — Introduction to Artificial Intelligence and Machine Learning
 
-Course material for **CSE252**, Lovely Professional University, session 2026–27
-(August–February).
-
 > **Important Note:** If you experience access issues, preview errors, or are
->unable to view any PDF or script directly on GitHub, please download the file
+> unable to view any PDF or script directly on GitHub, please download the file
 > to your local machine to access it properly.
 
 ---
 
-## Course at a glance
-
-| | |
-|---|---|
-| **Course code** | CSE252 |
-| **Course title** | Introduction to Artificial Intelligence and Machine Learning |
-| **L : T : P** | 2 : 0 : 2 |
-| **Credits** | 3 |
-| **Course planner** | 32952 :: Sumit Mittu |
-| **Weightage** | ATT 5 · CA 25 · MTT 20 · ETT 50 |
-| **Mid Term** | Applicable |
-
----
-
-## Course outcomes
-
-Through this course students should be able to:
-
-| CO | Outcome |
-|---|---|
-| **CO1** | Understand the fundamental concepts of Artificial Intelligence, Machine Learning, intelligent agents, and their applications in robotics and autonomous systems. |
-| **CO2** | Apply preprocessing, feature engineering, and visualization techniques on datasets for developing AI models. |
-| **CO3** | Build supervised machine learning models for solving regression and classification problems using appropriate algorithms. |
-| **CO4** | Apply unsupervised learning techniques for clustering and dimensionality reduction to discover hidden patterns in data. |
-| **CO5** | Examine and improve machine learning models using appropriate performance metrics and validation techniques. |
-| **CO6** | Build simple AI-enabled solutions for real-world robotics and automation problems using Python and Scikit-learn. |
-
----
-
-## Units
+## Units and Topics
 
 ### Unit I — Foundations of Artificial Intelligence
-Introduction to AI and its evolution · Types of Artificial Intelligence ·
-AI vs ML vs Deep Learning vs Data Science · Problem-solving using AI and the AI
-development lifecycle · Intelligent agents and agent environments ·
-Applications of AI in robotics, healthcare, manufacturing and smart cities ·
-Ethics in AI and Responsible AI · Introduction to Generative AI
+- Introduction to AI and its evolution
+- Types of Artificial Intelligence
+- AI vs ML vs Deep Learning vs Data Science
+- Problem-solving using AI and AI Development Lifecycle
+- Intelligent Agents and Agent Environment
+- Applications of AI in Robotics, Healthcare, Manufacturing and Smart Cities
+- Ethics in AI and Responsible AI
+- Introduction to Generative AI
 
 ### Unit II — Data Preparation and Machine Learning Workflow
-Introduction to NumPy, Pandas and Matplotlib · Understanding data — types of
-datasets, data collection and exploratory data analysis · Data preprocessing —
-handling missing values and detecting outliers · Feature engineering — feature
-scaling, encoding and selection · Training and validation — train-test split
-and cross validation
+- Introduction to NumPy, Pandas and Matplotlib
+- Understanding Data (Types of Datasets, Data Collection and Exploratory Data Analysis)
+- Data Preprocessing (Handling missing values and Detecting outliers)
+- Feature Engineering (Introduction to feature scaling, feature encoding and feature selection)
+- Training and Validation (Train-Test Split and Cross Validation)
 
 ### Unit III — Supervised Machine Learning
-Regression — linear regression, polynomial regression, decision tree
-regression · Classification — logistic regression, K-nearest neighbour,
-decision tree classifier, random forest, Naïve Bayes · Concepts of bias,
-variance, underfitting and overfitting
+- Regression (Linear Regression, Polynomial Regression, Decision Tree Regression)
+- Classification (Logistic Regression, K-Nearest Neighbour, Introduction to Decision Tree Classifier and Random Forest, Naïve Bayes)
+- Concepts of Bias, Variance, Underfitting and Overfitting
 
 ### Unit IV — Unsupervised Learning
-Clustering — K-means clustering, hierarchical clustering, concept of DBSCAN ·
-Dimensionality reduction and Principal Component Analysis · Pattern discovery
-— association rule mining and the Apriori algorithm · Unsupervised learning
-applications in robotics and sensor data
+- Clustering (K-Means Clustering, Hierarchical Clustering, Concept of DBSCAN)
+- Dimensionality Reduction and Principal Component Analysis
+- Pattern Discovery (Association Rule Mining, Apriori Algorithm)
+- Unsupervised Learning application in Robotics and Sensor data
 
 ### Unit V — Model Evaluation and Improvement
-Regression metrics — MAE, MSE, RMSE, R² score · Confusion matrix and
-classification metrics — accuracy, precision, recall, F1-score, ROC-AUC ·
-Model improvement — cross validation, hyperparameter tuning, grid search,
-random search · Introduction to Explainable AI
+- Regression Metrics (MAE, MSE, RMSE, R² Score)
+- Confusion Matrix and Classification Metrics (Accuracy, Precision, Recall, F1-score, ROC-AUC)
+- Model Improvement (Cross Validation, Hyperparameter Tuning, Grid Search, Random Search)
+- Introduction to Explainable AI
 
 ### Unit VI — AI for Intelligent Systems and Robotics
-Computer vision — overview of image classification and object detection ·
-Natural language processing — NLP fundamentals, chatbots and conversational
-AI · Reinforcement learning — agent, state, action, reward · AI for autonomous
-robots and future trends
+- Computer Vision (Overview of Image Classification, Overview of Object Detection) for Intelligent Systems and Robotics
+- Natural Language Processing (NLP Fundamentals, Chatbots and Conversational AI) for Intelligent Systems and Robotics
+- Reinforcement Learning (Concepts - Agent, State, Action, Reward) in context Intelligent Systems and Robotics
+- AI for Autonomous Robots and Future Trends in AI for Intelligent Systems and Robotics
 
 ---
 
-## Practicals
+## List of Practicals
 
-| # | Practical | Unit |
-|---|---|---|
-| 1 | Installation and familiarisation with Python, Jupyter Notebook and Google Colab | I |
-| 2 | Data manipulation using NumPy and Pandas | II |
-| 3 | Data visualisation using Matplotlib | II |
-| 4 | Exploratory data analysis on a real-world dataset | II |
-| 5 | Data preprocessing — missing values, encoding and feature scaling | II |
-| 6 | Implementation of linear regression | III |
-| 7 | Implementation of logistic regression | III |
-| 8 | Classification using K-nearest neighbour | III |
-| 9 | Classification using decision tree and random forest | III |
-| 10 | Clustering using K-means | IV |
-| 11 | Dimensionality reduction using PCA | IV |
-| 12 | Performance evaluation — confusion matrix, precision, recall, F1-score | V |
-| 13 | Hyperparameter tuning using grid search | V |
-| 14 | Mini project — an AI solution for robotics, automation or a smart system | VI |
+**Practical 1** — Installation and familiarization with Python, Jupyter Notebook and Google Colab.
+*Set up the AI/ML development environment using Python.*
 
----
+**Practical 2** — Data manipulation using NumPy and Pandas.
+*Perform fundamental data manipulation tasks.*
 
-## Reading
+**Practical 3** — Data visualization using Matplotlib.
+*Create graphical representations of data to visually identify trends, distributions, and outliers.*
 
-**Textbook**
+**Practical 4** — Exploratory Data Analysis on a real-world dataset – Titanic dataset and Student Performance dataset.
+*Conduct exploratory data analysis to extract preliminary insights from complex, real-world datasets.*
 
-- **T-1** — *Artificial Intelligence: A Modern Approach*, Stuart Russell and
-  Peter Norvig (Pearson)
+**Practical 5** — Data preprocessing: handling missing values, encoding and feature scaling.
+*Apply data cleaning and transformation techniques to prepare raw datasets for machine learning algorithms.*
 
-**Reference books**
+**Practical 6** — Implementation of Linear Regression.
+*Build and execute a linear regression model to predict continuous target variables.*
 
-- **R-1** — *Machine Learning with PyTorch and Scikit-Learn*, Sebastian Raschka,
-  Yuxi (Hayden) Liu, Vahid Mirjalili (Packt)
-- **R-2** — *Python Machine Learning by Example*, Yuxi (Hayden) Liu (Packt)
-- **R-3** — *A First Course in Artificial Intelligence*, Deepak Khemani
-  (McGraw Hill)
-- **R-4** — *Fundamentals of Machine Learning: A Business Perspective*,
-  Pratyush Banerjee, Supriti Mishra, Shivashankar Chari (McGraw Hill)
-- **R-5** — *Data Science and Machine Learning Using Python*, Reema Thareja
-  (McGraw Hill)
+**Practical 7** — Implementation of Logistic Regression.
+*Develop a logistic regression model to solve foundational binary classification problems.*
 
----
+**Practical 8** — Classification using K-Nearest Neighbour.
+*Implement a distance-based K-Nearest Neighbour algorithm for classifying non-linear data.*
 
+**Practical 9** — Classification using Decision Tree and Random Forest.
+*Build and compare tree-based and ensemble models to improve classification accuracy and handle complex datasets.*
+
+**Practical 10** — Clustering using K-Means.
+*Apply unsupervised learning to partition unlabeled data into distinct, centroid-based groups.*
+
+**Practical 11** — Dimensionality Reduction using PCA.
+*Utilize Principal Component Analysis to reduce feature space complexity while retaining critical data variance.*
+
+**Practical 12** — Performance evaluation using Confusion Matrix, Precision, Recall and F1-score.
+*Quantify and interpret the performance and error rates of classification models using standard metrics.*
+
+**Practical 13** — Hyperparameter tuning using Grid Search.
+*Optimize machine learning models systematically by identifying the most effective hyperparameter combinations.*
+
+**Practical 14** — Mini Project: Development of an AI solution for a robotics, automation or smart system application.
+*Design, develop, and evaluate an end-to-end AI-enabled solution for a real-world autonomous or smart system.*
