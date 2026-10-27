@@ -1,0 +1,318 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>CSE252 &middot; Introduction to AI and Machine Learning Unit V &mdash; Model Evaluation and Improvement &mdash; Numericals</title>
+<style>
+:root{--navy:#182B49;--navy2:#253E64;--cyan:#0096C7;--ice:#7EC5E2;--purple:#5C2D91;
+      --orange:#ED771F;--green:#107C41;--red:#B42318;--grey:#586476;--rule:#D8DFE8;
+      --bg:#F6F9FC;--card:#fff}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--navy);
+     font:15px/1.65 "Segoe UI",system-ui,-apple-system,Arial,sans-serif}
+.wrap{max-width:1180px;margin:0 auto;padding:0 20px}
+header{background:var(--navy);color:#fff;padding:28px 0 24px;border-bottom:4px solid var(--cyan)}
+header .eyebrow{color:var(--ice);font-size:12.5px;font-weight:600;letter-spacing:.08em;text-transform:uppercase}
+header h1{margin:7px 0 6px;font-size:32px;font-weight:600;line-height:1.2}
+header p{margin:0;color:#C9D8E6;font-size:15.5px;max-width:860px}
+nav{background:var(--navy2);position:sticky;top:0;z-index:50;box-shadow:0 2px 8px rgba(24,43,73,.2)}
+nav ul{display:flex;flex-wrap:wrap;gap:2px;list-style:none;margin:0;padding:0}
+nav a{display:block;padding:11px 14px;color:#D8E6F2;text-decoration:none;font-size:13.5px;font-weight:600}
+nav a:hover{background:rgba(255,255,255,.13);color:#fff}
+section{padding:34px 0 12px;border-bottom:1px solid var(--rule)}
+h2{font-size:24px;margin:0 0 6px;font-weight:600}
+h2 .num{display:inline-block;background:var(--cyan);color:#fff;font-size:13px;
+        padding:3px 9px;border-radius:4px;margin-right:10px;vertical-align:3px}
+h3{font-size:17.5px;margin:24px 0 8px;font-weight:600;color:var(--navy)}
+.lede{color:var(--grey);font-size:15.5px;margin:0 0 16px;max-width:920px}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:18px;margin:14px 0}
+@media(max-width:900px){.grid{grid-template-columns:1fr}}
+/* ---- formula sheet ---- */
+.fsheet{border:1px solid var(--rule);border-top:3px solid var(--navy);border-radius:4px;
+        background:var(--card);margin:18px 0;padding:15px 20px 8px}
+.fshd{font-size:12px;text-transform:uppercase;letter-spacing:.06em;font-weight:700;
+      color:var(--navy);margin-bottom:8px}
+.fst{width:100%;border-collapse:collapse;margin:0;font-size:14px;box-shadow:none}
+.fst td{border:0;border-top:1px solid #E1EAF3;padding:9px 8px;vertical-align:middle;
+        background:none}
+.fst tr:first-child td{border-top:0}
+.fst tbody tr:nth-child(even){background:none}
+td.fsn{width:23%;font-weight:600;color:var(--navy);font-size:13.5px}
+td.fsf{width:42%}
+td.fsf .math{font-size:16.5px;line-height:1.9;white-space:normal}
+td.fsw{color:var(--grey);font-size:13px}
+/* ---- the method ---- */
+.meth{border:1px solid var(--rule);border-left:3px solid var(--navy);border-radius:4px;
+      background:var(--card);margin:18px 0;padding:15px 20px 16px}
+.methd{font-size:12px;text-transform:uppercase;letter-spacing:.06em;font-weight:700;
+       color:var(--navy);margin-bottom:9px}
+.meth ol{margin:0;padding-left:22px}
+.meth li{font-size:14.8px;line-height:1.68;padding:4px 0;color:var(--navy)}
+.meth li::marker{color:var(--grey);font-weight:700}
+/* ---- practice ---- */
+.prac{border:1px solid var(--rule);border-radius:4px;background:var(--card);
+      margin:18px 0;padding:15px 20px 16px}
+.prhd{font-size:12px;text-transform:uppercase;letter-spacing:.06em;font-weight:700;
+      color:var(--navy);margin-bottom:10px;display:flex;align-items:center;gap:12px}
+.pall{margin-left:auto;font-size:12px;padding:5px 11px}
+.prac ol{margin:0;padding-left:22px}
+.prac>ol>li{padding:11px 0;border-top:1px solid #EEF2F6}
+.prac>ol>li:first-child{border-top:0}
+.prac li::marker{color:var(--grey);font-weight:700}
+/* Numericals pages run quiet: panels are white with a thin rule, and colour is
+   reserved for meaning (a revealed answer, a caution) rather than decoration. */
+body.quiet .formula{background:var(--card);border:1px solid var(--rule);
+      border-left:3px solid var(--navy);border-radius:4px}
+body.quiet .formula .flabel{color:var(--navy)}
+body.quiet .ex{background:var(--card);border:1px solid var(--rule);
+      border-left:3px solid var(--green);border-radius:4px}
+body.quiet .exgiven{background:#F7FAFC;border-color:var(--rule)}
+body.quiet .why{background:var(--card)}
+body.quiet .whygrid{background:var(--rule)}
+body.quiet .wq.w3{background:var(--card)}
+body.quiet .take{background:var(--card);border:1px solid var(--rule);
+      border-left:3px solid var(--green);border-radius:4px}
+body.quiet .warn{background:var(--card);border:1px solid var(--rule);
+      border-left:3px solid var(--orange);border-radius:4px}
+.pq{font-size:14.8px;line-height:1.68;color:var(--navy);margin-bottom:7px}
+.pbtn{font-size:12px;padding:4px 10px}
+.pa{display:none;margin-top:9px;background:#E4F6EB;border-left:3px solid var(--green);
+    border-radius:5px;padding:9px 13px;font-size:14.5px;line-height:1.7;color:var(--navy)}
+.pa.on{display:block}
+.pa b{color:var(--green)}
+.ex{border:1.5px solid #BFD9CB;border-left:5px solid var(--green);border-radius:9px;
+    background:#FBFEFC;margin:18px 0;padding:14px 18px 16px}
+.exhd{font-size:12px;text-transform:uppercase;letter-spacing:.06em;font-weight:700;
+      color:var(--green);margin-bottom:9px}
+.exgiven{font-size:14.5px;background:#fff;border:1px solid #DCE9E1;border-radius:6px;
+         padding:9px 13px;margin-bottom:12px}
+.exsteps{list-style:none;counter-reset:exs;margin:0;padding:0}
+.exsteps li{counter-increment:exs;display:grid;grid-template-columns:26px 1fr;gap:11px;
+            padding:7px 0;border-top:1px solid #E7F0EA;align-items:baseline}
+.exsteps li:first-child{border-top:0}
+.exsteps li::before{content:counter(exs);display:block;width:21px;height:21px;
+                    border-radius:50%;background:var(--green);color:#fff;font-size:11.5px;
+                    font-weight:700;text-align:center;line-height:21px}
+.exb{min-width:0}
+.exl{font-size:13.5px;color:var(--grey);display:block;margin-bottom:3px}
+.exw{font-size:15.5px;color:var(--navy);font-family:"Cambria Math",Cambria,Georgia,serif;
+     display:block;line-height:1.8}
+.exans{margin-top:12px;background:#E4F6EB;border-radius:6px;padding:10px 14px;
+       font-size:15px;color:var(--navy);font-weight:600}
+.exans b{color:var(--green)}
+@media(max-width:700px){.exsteps li{grid-template-columns:22px 1fr;gap:8px}}
+.why{border:1.5px solid #CBD9E6;border-radius:9px;margin:18px 0;overflow:hidden;
+     background:linear-gradient(180deg,#F4F9FD 0,#fff 54px)}
+.whyhd{font-size:12px;text-transform:uppercase;letter-spacing:.06em;font-weight:700;
+       color:var(--navy);padding:13px 18px 0}
+.whygrid{display:grid;grid-template-columns:repeat(3,1fr);gap:1px;background:#E3EAF1;
+         margin-top:12px;border-top:1px solid #E3EAF1}
+.wq{background:var(--card);padding:14px 17px 16px}
+.wq h5{margin:0 0 7px;font-size:12px;font-weight:700;letter-spacing:.03em}
+.wq p{margin:0;font-size:14px;line-height:1.62}
+.wq.w1 h5{color:var(--cyan)}
+.wq.w2 h5{color:var(--purple)}
+.wq.w3 h5{color:var(--orange)}
+.wq.w3{background:#FFFBF7}
+@media(max-width:900px){.whygrid{grid-template-columns:1fr}}
+.card{background:var(--card);border:1px solid var(--rule);border-radius:8px;padding:15px 17px}
+.card h4{margin:0 0 7px;font-size:12.5px;text-transform:uppercase;letter-spacing:.05em;color:var(--cyan)}
+.card p{margin:0;font-size:14.5px}
+.take{background:#E4F6EB;border-left:5px solid var(--green);border-radius:6px;padding:12px 16px;margin:14px 0}
+.take b.hd{color:var(--green);text-transform:uppercase;font-size:12.5px;letter-spacing:.05em}
+.take b{color:var(--navy)}
+.warn{background:#FDEEEC;border-left:5px solid var(--orange);border-radius:6px;padding:12px 16px;margin:14px 0}
+.warn b.hd{color:var(--orange);text-transform:uppercase;font-size:12.5px;letter-spacing:.05em}
+.warn b{color:var(--navy)}
+table{border-collapse:collapse;width:100%;font-size:14px;margin:10px 0}
+th,td{border:1px solid var(--rule);padding:7px 10px;text-align:left;vertical-align:top}
+th{background:var(--navy);color:#fff;font-weight:600;font-size:13px}
+tbody tr:nth-child(even){background:#F2F7FB}
+td.hi{background:#FFF3E0;font-weight:700}
+code{background:#EEF3F8;padding:1px 5px;border-radius:4px;font-size:13.5px}
+footer{background:var(--navy);color:#9FB4CA;padding:22px 0;font-size:13.5px}
+
+/* ---------------- formula block ---------------- */
+.formula{background:#F3EEFB;border-left:5px solid var(--purple);border-radius:6px;
+         padding:14px 18px;margin:14px 0;overflow-x:auto}
+.formula .flabel{display:block;font-size:11.5px;font-weight:700;letter-spacing:.05em;
+                 text-transform:uppercase;color:var(--purple);margin-bottom:9px}
+.formula small{display:block;font:13.5px/1.55 "Segoe UI",sans-serif;color:var(--grey);margin-top:10px}
+
+/* ---------------- real maths ---------------- */
+.math{font-family:"Cambria Math",Cambria,"Times New Roman",Georgia,serif;
+      font-size:20px;line-height:2.1;color:var(--navy);white-space:nowrap}
+.math i,.math .var{font-style:italic;font-family:inherit}
+.math .op{font-style:normal;padding:0 .22em}
+.math b.vecb{font-weight:700;font-style:normal}
+.math sub{font-size:.62em;vertical-align:-.3em}
+.math sup{font-size:.62em;vertical-align:.45em}
+.cases{display:inline-flex;align-items:center;vertical-align:middle;margin:0 .2em}
+.cases .cb{font-size:2.5em;font-weight:300;line-height:.86;margin-right:.14em}
+.cases table{border-collapse:collapse;margin:0;width:auto;box-shadow:none;font-size:.86em}
+.cases tbody tr,.cases tbody tr:nth-child(even){border:0;background:none}
+.cases td{border:0;padding:.14em .2em;background:none;white-space:nowrap;
+          line-height:1.5;vertical-align:middle}
+.cases td.cc{font-size:.8em;font-style:normal;color:var(--grey);padding-left:1.5em;
+             font-family:"Segoe UI",system-ui,sans-serif}
+.frac{display:inline-block;vertical-align:-.52em;text-align:center;margin:0 .26em}
+.frac .num{display:block;padding:0 .4em .12em;border-bottom:1.7px solid currentColor;line-height:1.22}
+.frac .den{display:block;padding:.12em .4em 0;line-height:1.22}
+.sqrt{display:inline-block;position:relative;margin:0 .15em}
+.sqrt .rad{font-size:1.12em;vertical-align:-.06em}
+.sqrt .rand{border-top:1.6px solid currentColor;padding:.1em .22em 0 .12em;margin-left:-.12em}
+.bigop{display:inline-block;text-align:center;vertical-align:-.5em;margin:0 .2em;line-height:1}
+.bigop .glyph{display:block;font-size:1.5em;line-height:.88}
+.bigop.int .glyph{font-size:1.75em}
+.bigop .lim{display:block;font-size:.5em;line-height:1.25;font-style:italic}
+.paren{font-size:1.18em;padding:0 .06em}
+.paren.big{font-size:1.5em;vertical-align:-.16em}
+.bar{padding:0 .09em}
+.hat{position:relative;display:inline-block;font-style:italic}
+.hat::after{content:"\0302";position:absolute;left:0;right:0;top:-.46em;
+            text-align:center;font-size:.72em;font-style:normal;line-height:1;
+            font-family:"Cambria Math",Cambria,serif}
+.matrix{display:inline-block;vertical-align:middle;margin:0 .18em}
+.matrix .mb{display:inline-block;font-size:2.1em;vertical-align:middle;font-weight:300}
+.matrix table{display:inline-table;width:auto;border:0;margin:0 .1em;vertical-align:middle}
+.matrix td{border:0;padding:.08em .38em;text-align:center;font-size:.86em;background:none}
+
+/* ---------------- visualisation ---------------- */
+.viz{background:var(--card);border:1px solid var(--rule);border-radius:8px;padding:14px;margin:16px 0}
+.controls{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin-bottom:10px}
+button{font:600 13.5px "Segoe UI",sans-serif;padding:8px 14px;border-radius:6px;
+       border:1px solid var(--cyan);background:var(--cyan);color:#fff;cursor:pointer}
+button:hover{filter:brightness(1.08)}
+button.ghost{background:#fff;color:var(--cyan)}
+button:disabled{opacity:.45;cursor:not-allowed}
+select{font:14px "Segoe UI";padding:7px 9px;border-radius:6px;border:1px solid var(--rule);background:#fff}
+svg{width:100%;height:auto;display:block;background:#fff;border-radius:6px;max-width:1040px;margin:0 auto}
+.status{font-size:15.5px;line-height:1.6;background:#EAF4FA;border-left:4px solid var(--cyan);
+        border-radius:6px;padding:12px 16px;margin-top:12px;min-height:48px;color:var(--navy)}
+.status b{color:var(--cyan)}
+.stepcount{font-size:12.5px;font-weight:700;color:var(--grey);letter-spacing:.03em;
+           margin-left:auto;padding-right:4px;white-space:nowrap}
+.stepcount em{font-style:normal;color:var(--cyan);font-size:14.5px}
+.viz.done .stepcount em{color:var(--green)}
+.legend{display:flex;flex-wrap:wrap;gap:14px;font-size:13px;color:var(--grey);margin-top:9px;justify-content:center}
+.legend i{display:inline-block;width:12px;height:12px;border-radius:50%;margin-right:5px;vertical-align:-1px}
+</style>
+</head>
+<body class="quiet">
+<header><div class="wrap">
+  <div class="eyebrow">CSE252 &middot; Introduction to AI and Machine Learning &middot; Unit V</div>
+  <h1>Model Evaluation and Improvement &mdash; Numericals</h1>
+  <p>Every formula this unit needs, what to do with it, and a worked example with the full arithmetic. Work the practice questions before revealing the answers.</p>
+</div></header>
+<nav><div class="wrap"><ul><li><a href="#regmet">1 &middot; Regression metrics</a></li><li><a href="#conf">2 &middot; Confusion matrix</a></li><li><a href="#roc">3 &middot; ROC &amp; AUC</a></li><li><a href="#cv">4 &middot; Cross validation</a></li></ul></div></nav>
+<div class="fsheet"><div class="fshd">Formula sheet &mdash; everything this unit needs</div><table class="fst"><tr><td class="fsn">MAE</td><td class="fsf"><span class="math">MAE = <span class="frac"><span class="num">1</span><span class="den"><i>n</i></span></span><span class="bigop"><span class="lim">&nbsp;</span><span class="glyph">&#8721;</span><span class="lim">&nbsp;</span></span><span class="bar">|</span><i>y</i><sub><i>i</i></sub>&#8722;<i>&#375;</i><sub><i>i</i></sub><span class="bar">|</span></span></td><td class="fsw">average size of the miss, in the units of <i>y</i></td></tr><tr><td class="fsn">MSE / RMSE</td><td class="fsf"><span class="math">MSE = <span class="frac"><span class="num">1</span><span class="den"><i>n</i></span></span><span class="bigop"><span class="lim">&nbsp;</span><span class="glyph">&#8721;</span><span class="lim">&nbsp;</span></span><span class="paren">(</span><i>y</i><sub><i>i</i></sub>&#8722;<i>&#375;</i><sub><i>i</i></sub><span class="paren">)</span><sup>2</sup>,&nbsp; RMSE = <span class="sqrt"><span class="rad">&#8730;</span><span class="rand">MSE</span></span></span></td><td class="fsw">squaring punishes a few large errors heavily</td></tr><tr><td class="fsn"><i>R</i><sup>2</sup></td><td class="fsf"><span class="math"><i>R</i><sup>2</sup> = 1 &#8722; <span class="frac"><span class="num">SSE</span><span class="den">SST</span></span></span></td><td class="fsw">1 perfect, 0 no better than the mean, negative is possible</td></tr><tr><td class="fsn">Accuracy</td><td class="fsf"><span class="math"><span class="frac"><span class="num"><span class="op">TP</span> + <span class="op">TN</span></span><span class="den"><span class="op">TP</span> + <span class="op">TN</span> + <span class="op">FP</span> + <span class="op">FN</span></span></span></span></td><td class="fsw">useless when the classes are imbalanced</td></tr><tr><td class="fsn">Precision</td><td class="fsf"><span class="math"><span class="frac"><span class="num"><span class="op">TP</span></span><span class="den"><span class="op">TP</span> + <span class="op">FP</span></span></span></span></td><td class="fsw">of what I flagged, how much was real?</td></tr><tr><td class="fsn">Recall</td><td class="fsf"><span class="math"><span class="frac"><span class="num"><span class="op">TP</span></span><span class="den"><span class="op">TP</span> + <span class="op">FN</span></span></span></span></td><td class="fsw">of what was real, how much did I catch?</td></tr><tr><td class="fsn">Specificity</td><td class="fsf"><span class="math"><span class="frac"><span class="num"><span class="op">TN</span></span><span class="den"><span class="op">TN</span> + <span class="op">FP</span></span></span></span></td><td class="fsw">true negative rate = 1 &#8722; FPR</td></tr><tr><td class="fsn"><i>F</i><sub>1</sub></td><td class="fsf"><span class="math">2 &#183; <span class="frac"><span class="num">P &#183; R</span><span class="den">P + R</span></span></span></td><td class="fsw">harmonic mean &mdash; high only when <b>both</b> are high</td></tr><tr><td class="fsn">TPR / FPR</td><td class="fsf"><span class="math">TPR = <span class="frac"><span class="num"><span class="op">TP</span></span><span class="den"><span class="op">TP</span>+<span class="op">FN</span></span></span>,&nbsp; FPR = <span class="frac"><span class="num"><span class="op">FP</span></span><span class="den"><span class="op">FP</span>+<span class="op">TN</span></span></span></span></td><td class="fsw">the two axes of the ROC curve</td></tr><tr><td class="fsn">CV score</td><td class="fsf"><span class="math"><span class="frac"><span class="num">1</span><span class="den"><i>k</i></span></span><span class="bigop"><span class="lim"><i>k</i></span><span class="glyph">&#8721;</span><span class="lim"><i>i</i>=1</span></span>&nbsp;<span class="op">score</span><sub><i>i</i></sub></span></td><td class="fsw">report the mean <b>and</b> the standard deviation</td></tr></table></div>
+<section id="regmet"><div class="wrap"><h2><span class="num">1</span>Regression metrics</h2><p class="lede">Four different summaries of the same set of residuals. They answer different questions, which is why all four exist.</p><div class="formula"><span class="flabel">All four at once</span><div class="math">MAE = <span class="frac"><span class="num">1</span><span class="den"><i>n</i></span></span><span class="bigop"><span class="lim">&nbsp;</span><span class="glyph">&#8721;</span><span class="lim">&nbsp;</span></span><span class="bar">|</span><i>e</i><span class="bar">|</span>,&nbsp;&nbsp;MSE = <span class="frac"><span class="num">1</span><span class="den"><i>n</i></span></span><span class="bigop"><span class="lim">&nbsp;</span><span class="glyph">&#8721;</span><span class="lim">&nbsp;</span></span><i>e</i><sup>2</sup>,&nbsp;&nbsp;RMSE = <span class="sqrt"><span class="rad">&#8730;</span><span class="rand">MSE</span></span>,&nbsp;&nbsp;<i>R</i><sup>2</sup> = 1 &#8722; <span class="frac"><span class="num">SSE</span><span class="den">SST</span></span></div><small>where <i>e</i> = <i>y</i> &#8722; <i>&#375;</i>. RMSE is <b>always at least</b> MAE, and the gap tells you how much a few large errors dominate.</small></div><div class="meth"><div class="methd">The method &mdash; what to actually do</div><ol><li>Tabulate <i>y</i>, <i>&#375;</i>, and the residual <i>e</i> = <i>y</i> &#8722; <i>&#375;</i> for every point.</li><li>Add a column of <span class="bar">|</span><i>e</i><span class="bar">|</span> and a column of <i>e</i><sup>2</sup>.</li><li>MAE = (sum of <span class="bar">|</span><i>e</i><span class="bar">|</span>) / <i>n</i>.</li><li>SSE = sum of <i>e</i><sup>2</sup>; MSE = SSE / <i>n</i>; RMSE = <span class="sqrt"><span class="rad">&#8730;</span><span class="rand">MSE</span></span>.</li><li>For <i>R</i><sup>2</sup>: compute <i>y&#772;</i>, then SST = <span class="bigop"><span class="lim">&nbsp;</span><span class="glyph">&#8721;</span><span class="lim">&nbsp;</span></span><span class="paren">(</span><i>y</i>&#8722;<i>y&#772;</i><span class="paren">)</span><sup>2</sup>.</li><li><i>R</i><sup>2</sup> = 1 &#8722; SSE/SST.</li><li>Sanity checks: RMSE &#8805; MAE always; <i>R</i><sup>2</sup> = 0 means you matched the mean; negative means you did worse.</li></ol></div><div class="ex"><div class="exhd">Worked example &mdash; all four metrics on six predictions</div><div class="exgiven">Truth <i>y</i> = 3, 5, 7, 9, 11, 13. Predictions <i>&#375;</i> = 2.5, 5.5, 6, 10, 11.5, 12.</div><ol class="exsteps"><li><div class="exb"><span class="exl">Residuals <i>e</i> = <i>y</i> &#8722; <i>&#375;</i></span><span class="exw">+0.5, &#8722;0.5, +1.0, &#8722;1.0, &#8722;0.5, +1.0</span></div></li><li><div class="exb"><span class="exl">Absolute values and their sum</span><span class="exw">0.5, 0.5, 1.0, 1.0, 0.5, 1.0 &#8594; sum = <b>4.5</b></span></div></li><li><div class="exb"><span class="exl">MAE</span><span class="exw"><span class="frac"><span class="num">4.5</span><span class="den">6</span></span> = <b>0.7500</b></span></div></li><li><div class="exb"><span class="exl">Squares and their sum</span><span class="exw">0.25, 0.25, 1.00, 1.00, 0.25, 1.00 &#8594; SSE = <b>3.75</b></span></div></li><li><div class="exb"><span class="exl">MSE and RMSE</span><span class="exw">MSE = <span class="frac"><span class="num">3.75</span><span class="den">6</span></span> = <b>0.6250</b>; &nbsp;RMSE = <span class="sqrt"><span class="rad">&#8730;</span><span class="rand">0.6250</span></span> = <b>0.7906</b></span></div></li><li><div class="exb"><span class="exl">For <i>R</i><sup>2</sup>, first the spread of <i>y</i> itself</span><span class="exw"><i>y&#772;</i> = 8 &#8594; SST = 25 + 9 + 1 + 1 + 9 + 25 = <b>70</b></span></div></li><li><div class="exb"><span class="exl"><i>R</i><sup>2</sup></span><span class="exw">1 &#8722; <span class="frac"><span class="num">3.75</span><span class="den">70</span></span> = 1 &#8722; 0.0536 = <b>0.9464</b></span></div></li></ol><div class="exans"><b>MAE 0.750, RMSE 0.791, <i>R</i><sup>2</sup> 0.946.</b> RMSE exceeds MAE because the two misses of 1.0 are squared before averaging. A large RMSE&ndash;MAE gap is a signal to look at the biggest residuals individually.</div></div><div class="prac"><div class="prhd">Practice<button class="ghost pall" data-all="pr14">Show all answers</button></div><ol><li><div class="pq">Residuals are +2, &minus;2, +2, &minus;2. Compute MAE and RMSE. Why are they equal?</div><button class="ghost pbtn" data-ans="pr14-1">Show answer</button><div class="pa" id="pr14-1">MAE = 8/4 = <b>2.0</b>. SSE = 16, MSE = 4, RMSE = <b>2.0</b>. They are equal because <b>every residual has the same magnitude</b> &mdash; squaring cannot favour any one of them. This is the only case where RMSE = MAE.</div></li><li><div class="pq">A model has SSE = 120 and SST = 100. What is <i>R</i><sup>2</sup>, and what does it mean?</div><button class="ghost pbtn" data-ans="pr14-2">Show answer</button><div class="pa" id="pr14-2"><i>R</i><sup>2</sup> = 1 &minus; 120/100 = <b>&minus;0.20</b>. Negative means the model is <b>worse than simply predicting the mean</b> of <i>y</i> for every point. Something is badly wrong &mdash; a sign error, the wrong features, or evaluation on a different distribution.</div></li><li><div class="pq">You are predicting house prices and one property is a &#8377;50 crore outlier. Should you report MAE or RMSE?</div><button class="ghost pbtn" data-ans="pr14-3">Show answer</button><div class="pa" id="pr14-3">Report <b>both</b>, and say why. RMSE will be dominated by that single property and will mostly measure how well you predicted <i>it</i>. MAE describes the typical listing far better. If the business cares about getting large valuations right, RMSE is the honest target; if it cares about the median listing, MAE is.</div></li></ol></div></div></section>
+<section id="conf"><div class="wrap"><h2><span class="num">2</span>Confusion matrix and classification metrics</h2><p class="lede">A classifier is wrong in two different ways, and they rarely cost the same. The matrix separates them.</p><div class="formula"><span class="flabel">The four metrics</span><div class="math">Accuracy = <span class="frac"><span class="num"><span class="op">TP</span>+<span class="op">TN</span></span><span class="den">all</span></span>,&nbsp;&nbsp;P = <span class="frac"><span class="num"><span class="op">TP</span></span><span class="den"><span class="op">TP</span>+<span class="op">FP</span></span></span>,&nbsp;&nbsp;R = <span class="frac"><span class="num"><span class="op">TP</span></span><span class="den"><span class="op">TP</span>+<span class="op">FN</span></span></span>,&nbsp;&nbsp;<i>F</i><sub>1</sub> = 2<span class="frac"><span class="num">PR</span><span class="den">P+R</span></span></div><small>Precision has <b>FP</b> in its denominator, recall has <b>FN</b>. That single difference is the whole distinction between them.</small></div><div class="meth"><div class="methd">The method &mdash; what to actually do</div><ol><li>Fix the threshold. Every number below depends on it.</li><li>Flag every example scoring &#8805; threshold.</li><li>Among the flagged: those truly positive are <b>TP</b>, truly negative are <b>FP</b>.</li><li>Among the not flagged: truly positive are <b>FN</b>, truly negative are <b>TN</b>.</li><li>Check TP + FP + FN + TN equals the total.</li><li>Substitute into each formula. Precision divides by what you <b>flagged</b> (TP+FP); recall divides by what was <b>real</b> (TP+FN).</li><li><i>F</i><sub>1</sub> last, from precision and recall.</li></ol></div><div class="ex"><div class="exhd">Worked example &mdash; one threshold, four counts, four metrics</div><div class="exgiven">Twelve scored examples; six are genuinely positive. Scores with truth in brackets: 0.95(+) 0.90(+) 0.85(&minus;) 0.80(+) 0.72(+) 0.65(&minus;) 0.60(+) 0.55(&minus;) 0.42(+) 0.35(&minus;) 0.25(&minus;) 0.10(&minus;). Threshold = <b>0.60</b>.</div><ol class="exsteps"><li><div class="exb"><span class="exl">Flag everything &#8805; 0.60</span><span class="exw">the top seven: 0.95, 0.90, 0.85, 0.80, 0.72, 0.65, 0.60</span></div></li><li><div class="exb"><span class="exl">Split the flagged by true label</span><span class="exw">positive: 0.95, 0.90, 0.80, 0.72, 0.60 &#8594; <b>TP = 5</b>; &nbsp;negative: 0.85, 0.65 &#8594; <b>FP = 2</b></span></div></li><li><div class="exb"><span class="exl">Split the five not flagged</span><span class="exw">positive but missed: 0.42 &#8594; <b>FN = 1</b>; &nbsp;correctly ignored: 0.55, 0.35, 0.25, 0.10 &#8594; <b>TN = 4</b></span></div></li><li><div class="exb"><span class="exl">Check</span><span class="exw">5 + 2 + 1 + 4 = <b>12</b> &#10003;</span></div></li><li><div class="exb"><span class="exl">Accuracy</span><span class="exw"><span class="frac"><span class="num">5 + 4</span><span class="den">12</span></span> = <span class="frac"><span class="num">9</span><span class="den">12</span></span> = <b>0.750</b></span></div></li><li><div class="exb"><span class="exl">Precision and recall</span><span class="exw">P = <span class="frac"><span class="num">5</span><span class="den">5+2</span></span> = <b>0.714</b>; &nbsp;R = <span class="frac"><span class="num">5</span><span class="den">5+1</span></span> = <b>0.833</b></span></div></li><li><div class="exb"><span class="exl"><i>F</i><sub>1</sub></span><span class="exw">2 &#183; <span class="frac"><span class="num">0.714 &#215; 0.833</span><span class="den">0.714 + 0.833</span></span> = 2 &#183; <span class="frac"><span class="num">0.595</span><span class="den">1.547</span></span> = <b>0.769</b></span></div></li></ol><div class="exans"><b>Accuracy 0.750, precision 0.714, recall 0.833, <i>F</i><sub>1</sub> 0.769.</b> At the default threshold of 0.50 the same model scores 0.667 / 0.625 / 0.833 / 0.714 &mdash; <b>worse on three of the four</b>. The model never changed; only the cut did.</div></div><div class="prac"><div class="prhd">Practice<button class="ghost pall" data-all="pr15">Show all answers</button></div><ol><li><div class="pq">A fraud detector sees 10 000 transactions, 100 of them fraudulent. It flags nothing at all. What is its accuracy, and its recall?</div><button class="ghost pbtn" data-ans="pr15-1">Show answer</button><div class="pa" id="pr15-1">TP = 0, FP = 0, FN = 100, TN = 9900. Accuracy = 9900/10000 = <b>0.99</b>. Recall = 0/(0+100) = <b>0.00</b>. A <b>99% accurate</b> model that catches <b>zero</b> fraud &mdash; which is exactly why accuracy is the wrong metric here.</div></li><li><div class="pq">TP = 40, FP = 10, FN = 20, TN = 30. Compute precision, recall and <i>F</i><sub>1</sub>.</div><button class="ghost pbtn" data-ans="pr15-2">Show answer</button><div class="pa" id="pr15-2">P = 40/50 = <b>0.80</b>; R = 40/60 = <b>0.667</b>; <i>F</i><sub>1</sub> = 2(0.80)(0.667)/(0.80+0.667) = 1.0667/1.4667 = <b>0.727</b>. Accuracy would be 70/100 = 0.70.</div></li><li><div class="pq">Screening for a serious disease: which matters more, precision or recall, and what does that do to the threshold?</div><button class="ghost pbtn" data-ans="pr15-3">Show answer</button><div class="pa" id="pr15-3"><b>Recall.</b> A false negative means a sick patient is sent home untreated; a false positive means an unnecessary follow-up test. The first is far worse, so you <b>lower the threshold</b> to catch more positives, accepting more false alarms. Precision falls, recall rises &mdash; a deliberate, defensible trade.</div></li></ol></div></div></section>
+<section id="roc"><div class="wrap"><h2><span class="num">3</span>ROC and AUC</h2><p class="lede">Sweep the threshold across its whole range and you get a curve that judges the model rather than any one cut.</p><div class="formula"><span class="flabel">The two axes</span><div class="math">TPR = <span class="frac"><span class="num"><span class="op">TP</span></span><span class="den"><span class="op">TP</span> + <span class="op">FN</span></span></span>,&nbsp;&nbsp;&nbsp;FPR = <span class="frac"><span class="num"><span class="op">FP</span></span><span class="den"><span class="op">FP</span> + <span class="op">TN</span></span></span></div><small>Plot TPR (vertical) against FPR (horizontal) as the threshold falls from above every score to below every score.</small></div><div class="meth"><div class="methd">The method &mdash; what to actually do</div><ol><li>Sort the examples by score, highest first.</li><li>Start with the threshold above every score: TPR = 0, FPR = 0 &mdash; the origin.</li><li>Lower the threshold past one example at a time.</li><li>If that example is a <b>true positive</b>, the curve steps <b>up</b> by 1/P.</li><li>If it is a <b>negative</b>, the curve steps <b>right</b> by 1/N.</li><li>You finish at (1, 1).</li><li>AUC = the area underneath, computed as a sum of rectangles and triangles &mdash; or equivalently, the probability a random positive outscores a random negative.</li></ol></div><div class="ex"><div class="exhd">Worked example &mdash; tracing the curve and computing AUC</div><div class="exgiven">The same twelve examples: P = 6 positives, N = 6 negatives. Each upward step is 1/6 = 0.167; each rightward step is also 1/6.</div><ol class="exsteps"><li><div class="exb"><span class="exl">Threshold above everything</span><span class="exw">(FPR, TPR) = <b>(0, 0)</b></span></div></li><li><div class="exb"><span class="exl">Past 0.95 (+) and 0.90 (+)</span><span class="exw">two positives &#8594; two steps up &#8594; (0, <b>0.333</b>)</span></div></li><li><div class="exb"><span class="exl">Past 0.85 (&#8722;)</span><span class="exw">a negative &#8594; step right &#8594; (<b>0.167</b>, 0.333)</span></div></li><li><div class="exb"><span class="exl">Past 0.80 (+) and 0.72 (+)</span><span class="exw">two more up &#8594; (0.167, <b>0.667</b>)</span></div></li><li><div class="exb"><span class="exl">Past 0.65 (&#8722;), 0.60 (+), 0.55 (&#8722;), 0.42 (+)</span><span class="exw">right, up, right, up &#8594; (0.500, <b>1.000</b>) &mdash; all positives now caught</span></div></li><li><div class="exb"><span class="exl">The remaining three negatives</span><span class="exw">three steps right along the top &#8594; (1, 1)</span></div></li><li><div class="exb"><span class="exl">Area, as columns of width 0.167</span><span class="exw">0.167(0.333) + 0.167(0.667) + 0.167(0.833) + 0.167(1) + 0.167(1) + 0.167(1) = <b>0.806</b></span></div></li></ol><div class="exans"><b>AUC = 0.806.</b> Cross-check by the ranking definition: of the 36 positive&ndash;negative pairs, the positive outscores the negative in 29 of them, and 29/36 = 0.806. <b>Both routes agree</b>, which is the standard way to verify an AUC by hand.</div></div><div class="prac"><div class="prhd">Practice<button class="ghost pall" data-all="pr16">Show all answers</button></div><ol><li><div class="pq">What AUC does a model that guesses at random achieve, and why?</div><button class="ghost pbtn" data-ans="pr16-1">Show answer</button><div class="pa" id="pr16-1"><b>0.5.</b> Its ROC curve is the diagonal from (0,0) to (1,1), and the area under that line is half the unit square. Equivalently, a random positive outscores a random negative exactly half the time.</div></li><li><div class="pq">Model A has AUC 0.92; Model B has AUC 0.78. Is A always the better choice?</div><button class="ghost pbtn" data-ans="pr16-2">Show answer</button><div class="pa" id="pr16-2"><b>Not necessarily.</b> AUC averages performance over <b>all</b> thresholds, including ones you would never use. If you must operate at a very low false-positive rate, B may beat A in that narrow region while losing overall. Always check performance <b>at your actual operating point</b>.</div></li><li><div class="pq">A model achieves AUC = 1.0 on your test set. What should you suspect?</div><button class="ghost pbtn" data-ans="pr16-3">Show answer</button><div class="pa" id="pr16-3"><b>Leakage.</b> Perfect separation on real data is extremely rare. The usual causes are a feature that encodes the target (an ID assigned after the outcome, a post-event timestamp), or test rows that also appear in training. Check the feature list and the split before celebrating.</div></li></ol></div></div></section>
+<section id="cv"><div class="wrap"><h2><span class="num">4</span>Cross validation and hyperparameter search</h2><p class="lede">One split gives one number that depends on luck. Cross validation removes the luck and tells you how much to trust the result.</p><div class="formula"><span class="flabel">Mean and spread</span><div class="math">CV = <span class="frac"><span class="num">1</span><span class="den"><i>k</i></span></span><span class="bigop"><span class="lim"><i>k</i></span><span class="glyph">&#8721;</span><span class="lim"><i>i</i>=1</span></span>&nbsp;<i>s</i><sub><i>i</i></sub>,&nbsp;&nbsp;&nbsp;sd = <span class="sqrt"><span class="rad">&#8730;</span><span class="rand"><span class="frac"><span class="num">1</span><span class="den"><i>k</i></span></span><span class="bigop"><span class="lim">&nbsp;</span><span class="glyph">&#8721;</span><span class="lim">&nbsp;</span></span><span class="paren">(</span><i>s</i><sub><i>i</i></sub>&#8722;<i>&#772;s</i><span class="paren">)</span><sup>2</sup></span></span></div><small>Report <b>both</b>. The mean is your estimate; the spread tells you whether a rival model's score is a real difference or noise.</small></div><div class="meth"><div class="methd">The method &mdash; what to actually do</div><ol><li>Shuffle, then cut the data into <i>k</i> equal folds (<i>k</i> = 5 or 10).</li><li>For each fold: train on the other <i>k</i> &#8722; 1, test on this one, record the score.</li><li>Every row is tested on exactly once and trained on <i>k</i> &#8722; 1 times.</li><li>Mean of the <i>k</i> scores = the reported performance.</li><li>Standard deviation = how much it wobbles.</li><li>For classification use <b>stratified</b> folds so each keeps the class balance.</li><li><b>Fit scalers and feature selection inside each fold</b>, never before splitting.</li><li>Grid search cost = (number of combinations) &#215; <i>k</i> fits.</li></ol></div><div class="ex"><div class="exhd">Worked example &mdash; 5-fold CV, then the cost of a grid search</div><div class="exgiven">A model is cross-validated over five folds of 4 rows each.</div><ol class="exsteps"><li><div class="exb"><span class="exl">The five fold scores</span><span class="exw">0.82, 0.88, 0.79, 0.91, 0.85</span></div></li><li><div class="exb"><span class="exl">Mean</span><span class="exw"><span class="frac"><span class="num">0.82+0.88+0.79+0.91+0.85</span><span class="den">5</span></span> = <span class="frac"><span class="num">4.25</span><span class="den">5</span></span> = <b>0.8500</b></span></div></li><li><div class="exb"><span class="exl">Deviations from the mean</span><span class="exw">&#8722;0.03, +0.03, &#8722;0.06, +0.06, 0.00</span></div></li><li><div class="exb"><span class="exl">Standard deviation</span><span class="exw"><span class="sqrt"><span class="rad">&#8730;</span><span class="rand"><span class="frac"><span class="num">0.0009+0.0009+0.0036+0.0036+0</span><span class="den">5</span></span></span></span> = <span class="sqrt"><span class="rad">&#8730;</span><span class="rand">0.00180</span></span> = <b>0.0424</b></span></div></li><li><div class="exb"><span class="exl">What that means</span><span class="exw">a single split could have returned <b>0.79</b> or <b>0.91</b> purely by luck of the draw</span></div></li><li><div class="exb"><span class="exl">Now cost a grid search: 4 &#215; 5 &#215; 3 hyperparameter values</span><span class="exw">60 combinations &#215; 5 folds = <b>300 model fits</b></span></div></li><li><div class="exb"><span class="exl">At 40 seconds per fit</span><span class="exw">300 &#215; 40 s = 12 000 s = <b>3 h 20 min</b></span></div></li></ol><div class="exans"><b>0.850 &plusmn; 0.042.</b> A rival model scoring 0.87 on one split is <i>inside the noise</i> of this measurement &mdash; you have not shown it is better. Reporting the spread is what stops you chasing differences that are not there.</div></div><div class="prac"><div class="prhd">Practice<button class="ghost pall" data-all="pr17">Show all answers</button></div><ol><li><div class="pq">Fold scores are 0.70, 0.90, 0.71, 0.89, 0.70. Mean and sd? What does the spread suggest?</div><button class="ghost pbtn" data-ans="pr17-1">Show answer</button><div class="pa" id="pr17-1">Mean = 3.90/5 = <b>0.780</b>. Deviations &minus;0.08, +0.12, &minus;0.07, +0.11, &minus;0.08 &#8594; sd = <span class="sqrt"><span class="rad">&#8730;</span><span class="rand">0.00946</span></span> &#8776; <b>0.097</b>. That is a <b>large</b> spread &mdash; performance depends heavily on which rows are held out, suggesting too little data or a very unstable model.</div></li><li><div class="pq">You standardise the whole dataset, then run 5-fold CV. What is wrong?</div><button class="ghost pbtn" data-ans="pr17-2">Show answer</button><div class="pa" id="pr17-2"><b>Data leakage.</b> The mean and standard deviation used for scaling were computed using the test folds, so information from the held-out data reached the training step. The reported score will be <b>optimistic</b>, and nothing downstream will reveal it. Fit the scaler inside each fold.</div></li><li><div class="pq">Grid search over 3 hyperparameters with 5, 4 and 3 values, under 10-fold CV. How many model fits?</div><button class="ghost pbtn" data-ans="pr17-3">Show answer</button><div class="pa" id="pr17-3">5 &#215; 4 &#215; 3 = 60 combinations, &#215; 10 folds = <b>600 fits</b>. Adding a fourth hyperparameter with 4 values would make it <b>2 400</b> &mdash; which is why random search is preferred past two or three parameters.</div></li></ol></div></div></section>
+<footer><div class="wrap">CSE252 &middot; Introduction to AI and Machine Learning &middot; Unit V &mdash; Model Evaluation and Improvement &mdash; Numericals &middot;
+School of Computer Science &amp; Engineering &middot; Session 2026&ndash;27</div></footer>
+<script>
+
+"use strict";
+var NS="http://www.w3.org/2000/svg";
+var C={navy:"#182B49",cyan:"#0096C7",purple:"#5C2D91",orange:"#ED771F",
+       green:"#107C41",red:"#B42318",grey:"#9AA7B5",rule:"#D8DFE8",ice:"#7EC5E2"};
+function el(p,n,a){var e=document.createElementNS(NS,n);for(var k in a)e.setAttribute(k,a[k]);
+  p.appendChild(e);return e;}
+function clr(s){while(s.firstChild)s.removeChild(s.firstChild);}
+function line(s,A,B,col,w,dash){var l=el(s,"line",{x1:A.x,y1:A.y,x2:B.x,y2:B.y,
+  stroke:col,"stroke-width":w,"stroke-linecap":"round"});
+  if(dash)l.setAttribute("stroke-dasharray",dash);return l;}
+function dot(s,p,r,fill){return el(s,"circle",{cx:p.x,cy:p.y,r:r,fill:fill});}
+function nodeC(s,p,label,fill,r){r=r||17;
+  el(s,"circle",{cx:p.x,cy:p.y,r:r,fill:fill,stroke:"#fff","stroke-width":2.5});
+  var t=el(s,"text",{x:p.x,y:p.y+5,"text-anchor":"middle",fill:"#fff","font-size":"14",
+    "font-weight":"600","font-family":"Segoe UI,sans-serif"});t.textContent=label;}
+function txt(s,x,y,str,col,size,anchor,weight){
+  var t=el(s,"text",{x:x,y:y,"text-anchor":anchor||"middle",fill:col||C.navy,
+    "font-size":size||12,"font-weight":weight||"600","font-family":"Segoe UI,sans-serif"});
+  t.textContent=str;return t;}
+function box(s,x,y,w,h,fill,stroke,rx){return el(s,"rect",{x:x,y:y,width:w,height:h,
+  rx:rx===undefined?6:rx,fill:fill,stroke:stroke||"none","stroke-width":1.6});}
+function badge(s,A,B,str){var mx=(A.x+B.x)/2,my=(A.y+B.y)/2;
+  el(s,"circle",{cx:mx,cy:my,r:11,fill:"#fff",stroke:C.rule});
+  txt(s,mx,my+4,str,C.navy,12);}
+function arrow(s,A,B,col,w){
+  var dx=B.x-A.x,dy=B.y-A.y,L=Math.sqrt(dx*dx+dy*dy);if(!L)return;
+  var ux=dx/L,uy=dy/L,ex=B.x-ux*20,ey=B.y-uy*20;
+  el(s,"line",{x1:A.x+ux*20,y1:A.y+uy*20,x2:ex,y2:ey,stroke:col,"stroke-width":w||2.6,
+    "stroke-linecap":"round"});
+  var a=8;
+  el(s,"polygon",{points:[ex+","+ey,(ex-ux*a-uy*a*0.6)+","+(ey-uy*a+ux*a*0.6),
+    (ex-ux*a+uy*a*0.6)+","+(ey-uy*a-ux*a*0.6)].join(" "),fill:col});}
+
+/* ---- generic step player, wired to data-viz buttons ---- */
+var VIZ={};
+function register(id,build,render){
+  VIZ[id]={build:build,render:render,steps:[],i:0,timer:null};
+  resetViz(id);
+}
+function resetViz(id){var m=VIZ[id];if(!m)return;
+  m.steps=m.build();m.i=0;stopViz(id);drawViz(id);}
+function drawViz(id){var m=VIZ[id];
+  m.render(document.getElementById("svg-"+id),m.steps[m.i],m.i,m.steps);
+  var st=document.getElementById("st-"+id);
+  if(st)st.innerHTML=m.steps[m.i].msg||"";
+  syncViz(id);}
+/* keep the counter and the buttons honest about where we are */
+function syncViz(id){var m=VIZ[id],last=m.steps.length-1;
+  function btn(a){return document.querySelector(
+    'button[data-act="'+a+'"][data-viz="'+id+'"]');}
+  var b;
+  if((b=btn("step")))b.disabled=m.i>=last;
+  if((b=btn("back")))b.disabled=m.i<=0;
+  var sc=document.getElementById("sc-"+id);
+  if(sc)sc.innerHTML="step <em>"+m.i+"</em> of "+last;
+  var wrap=document.getElementById("wrap-"+id);
+  if(wrap){if(m.i>=last&&last>0)wrap.classList.add("done");
+           else wrap.classList.remove("done");}}
+function stepViz(id){var m=VIZ[id];
+  if(m.i<m.steps.length-1){m.i++;drawViz(id);}
+  if(m.i>=m.steps.length-1)stopViz(id);}
+/* step backwards, so a student can flip between before and after */
+function stepBackViz(id){var m=VIZ[id];
+  if(m.i>0){stopViz(id);m.i--;drawViz(id);}}
+function stopViz(id){var m=VIZ[id];if(m.timer){clearInterval(m.timer);m.timer=null;}
+  var b=document.querySelector('button[data-act="auto"][data-viz="'+id+'"]');
+  if(b)b.textContent="Auto-play";}
+/* ---- practice answers: reveal one, or all of a block ---- */
+document.addEventListener("click",function(e){
+  if(!e.target.closest)return;
+  var one=e.target.closest("button[data-ans]");
+  if(one){var p=document.getElementById(one.getAttribute("data-ans"));
+    if(p){var on=p.classList.toggle("on");
+      one.textContent=on?"Hide answer":"Show answer";}
+    return;}
+  var all=e.target.closest("button[data-all]");
+  if(all){var g=all.getAttribute("data-all"),
+      blk=all.closest(".prac"),show=all.textContent.indexOf("Show")===0;
+    blk.querySelectorAll(".pa").forEach(function(p){
+      p.classList.toggle("on",show);});
+    blk.querySelectorAll("button[data-ans]").forEach(function(b2){
+      b2.textContent=show?"Hide answer":"Show answer";});
+    all.textContent=show?"Hide all answers":"Show all answers";}
+});
+document.addEventListener("click",function(e){
+  var b=e.target.closest?e.target.closest("button[data-viz]"):null;if(!b)return;
+  var id=b.getAttribute("data-viz"),act=b.getAttribute("data-act"),m=VIZ[id];if(!m)return;
+  if(act==="step")stepViz(id);
+  else if(act==="back")stepBackViz(id);
+  else if(act==="reset")resetViz(id);
+  else if(act==="auto"){
+    if(m.timer){stopViz(id);return;}
+    if(m.i>=m.steps.length-1)resetViz(id);
+    b.textContent="Pause";
+    m.timer=setInterval(function(){if(m.i>=m.steps.length-1)stopViz(id);else stepViz(id);},950);
+  }});
+
+
+</script>
+</body>
+</html>
