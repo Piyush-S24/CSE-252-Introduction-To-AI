@@ -1,0 +1,688 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>CSE252 &middot; Introduction to AI and Machine Learning Unit IV &mdash; Unsupervised Learning &mdash; Visual Walkthrough</title>
+<style>
+:root{--navy:#182B49;--navy2:#253E64;--cyan:#0096C7;--ice:#7EC5E2;--purple:#5C2D91;
+      --orange:#ED771F;--green:#107C41;--red:#B42318;--grey:#586476;--rule:#D8DFE8;
+      --bg:#F6F9FC;--card:#fff}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--navy);
+     font:15px/1.65 "Segoe UI",system-ui,-apple-system,Arial,sans-serif}
+.wrap{max-width:1180px;margin:0 auto;padding:0 20px}
+header{background:var(--navy);color:#fff;padding:28px 0 24px;border-bottom:4px solid var(--cyan)}
+header .eyebrow{color:var(--ice);font-size:12.5px;font-weight:600;letter-spacing:.08em;text-transform:uppercase}
+header h1{margin:7px 0 6px;font-size:32px;font-weight:600;line-height:1.2}
+header p{margin:0;color:#C9D8E6;font-size:15.5px;max-width:860px}
+nav{background:var(--navy2);position:sticky;top:0;z-index:50;box-shadow:0 2px 8px rgba(24,43,73,.2)}
+nav ul{display:flex;flex-wrap:wrap;gap:2px;list-style:none;margin:0;padding:0}
+nav a{display:block;padding:11px 14px;color:#D8E6F2;text-decoration:none;font-size:13.5px;font-weight:600}
+nav a:hover{background:rgba(255,255,255,.13);color:#fff}
+section{padding:34px 0 12px;border-bottom:1px solid var(--rule)}
+h2{font-size:24px;margin:0 0 6px;font-weight:600}
+h2 .num{display:inline-block;background:var(--cyan);color:#fff;font-size:13px;
+        padding:3px 9px;border-radius:4px;margin-right:10px;vertical-align:3px}
+h3{font-size:17.5px;margin:24px 0 8px;font-weight:600;color:var(--navy)}
+.lede{color:var(--grey);font-size:15.5px;margin:0 0 16px;max-width:920px}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:18px;margin:14px 0}
+@media(max-width:900px){.grid{grid-template-columns:1fr}}
+/* ---- formula sheet ---- */
+.fsheet{border:1px solid var(--rule);border-top:3px solid var(--navy);border-radius:4px;
+        background:var(--card);margin:18px 0;padding:15px 20px 8px}
+.fshd{font-size:12px;text-transform:uppercase;letter-spacing:.06em;font-weight:700;
+      color:var(--navy);margin-bottom:8px}
+.fst{width:100%;border-collapse:collapse;margin:0;font-size:14px;box-shadow:none}
+.fst td{border:0;border-top:1px solid #E1EAF3;padding:9px 8px;vertical-align:middle;
+        background:none}
+.fst tr:first-child td{border-top:0}
+.fst tbody tr:nth-child(even){background:none}
+td.fsn{width:23%;font-weight:600;color:var(--navy);font-size:13.5px}
+td.fsf{width:42%}
+td.fsf .math{font-size:16.5px;line-height:1.9;white-space:normal}
+td.fsw{color:var(--grey);font-size:13px}
+/* ---- the method ---- */
+.meth{border:1px solid var(--rule);border-left:3px solid var(--navy);border-radius:4px;
+      background:var(--card);margin:18px 0;padding:15px 20px 16px}
+.methd{font-size:12px;text-transform:uppercase;letter-spacing:.06em;font-weight:700;
+       color:var(--navy);margin-bottom:9px}
+.meth ol{margin:0;padding-left:22px}
+.meth li{font-size:14.8px;line-height:1.68;padding:4px 0;color:var(--navy)}
+.meth li::marker{color:var(--grey);font-weight:700}
+/* ---- practice ---- */
+.prac{border:1px solid var(--rule);border-radius:4px;background:var(--card);
+      margin:18px 0;padding:15px 20px 16px}
+.prhd{font-size:12px;text-transform:uppercase;letter-spacing:.06em;font-weight:700;
+      color:var(--navy);margin-bottom:10px;display:flex;align-items:center;gap:12px}
+.pall{margin-left:auto;font-size:12px;padding:5px 11px}
+.prac ol{margin:0;padding-left:22px}
+.prac>ol>li{padding:11px 0;border-top:1px solid #EEF2F6}
+.prac>ol>li:first-child{border-top:0}
+.prac li::marker{color:var(--grey);font-weight:700}
+/* Numericals pages run quiet: panels are white with a thin rule, and colour is
+   reserved for meaning (a revealed answer, a caution) rather than decoration. */
+body.quiet .formula{background:var(--card);border:1px solid var(--rule);
+      border-left:3px solid var(--navy);border-radius:4px}
+body.quiet .formula .flabel{color:var(--navy)}
+body.quiet .ex{background:var(--card);border:1px solid var(--rule);
+      border-left:3px solid var(--green);border-radius:4px}
+body.quiet .exgiven{background:#F7FAFC;border-color:var(--rule)}
+body.quiet .why{background:var(--card)}
+body.quiet .whygrid{background:var(--rule)}
+body.quiet .wq.w3{background:var(--card)}
+body.quiet .take{background:var(--card);border:1px solid var(--rule);
+      border-left:3px solid var(--green);border-radius:4px}
+body.quiet .warn{background:var(--card);border:1px solid var(--rule);
+      border-left:3px solid var(--orange);border-radius:4px}
+.pq{font-size:14.8px;line-height:1.68;color:var(--navy);margin-bottom:7px}
+.pbtn{font-size:12px;padding:4px 10px}
+.pa{display:none;margin-top:9px;background:#E4F6EB;border-left:3px solid var(--green);
+    border-radius:5px;padding:9px 13px;font-size:14.5px;line-height:1.7;color:var(--navy)}
+.pa.on{display:block}
+.pa b{color:var(--green)}
+.ex{border:1.5px solid #BFD9CB;border-left:5px solid var(--green);border-radius:9px;
+    background:#FBFEFC;margin:18px 0;padding:14px 18px 16px}
+.exhd{font-size:12px;text-transform:uppercase;letter-spacing:.06em;font-weight:700;
+      color:var(--green);margin-bottom:9px}
+.exgiven{font-size:14.5px;background:#fff;border:1px solid #DCE9E1;border-radius:6px;
+         padding:9px 13px;margin-bottom:12px}
+.exsteps{list-style:none;counter-reset:exs;margin:0;padding:0}
+.exsteps li{counter-increment:exs;display:grid;grid-template-columns:26px 1fr;gap:11px;
+            padding:7px 0;border-top:1px solid #E7F0EA;align-items:baseline}
+.exsteps li:first-child{border-top:0}
+.exsteps li::before{content:counter(exs);display:block;width:21px;height:21px;
+                    border-radius:50%;background:var(--green);color:#fff;font-size:11.5px;
+                    font-weight:700;text-align:center;line-height:21px}
+.exb{min-width:0}
+.exl{font-size:13.5px;color:var(--grey);display:block;margin-bottom:3px}
+.exw{font-size:15.5px;color:var(--navy);font-family:"Cambria Math",Cambria,Georgia,serif;
+     display:block;line-height:1.8}
+.exans{margin-top:12px;background:#E4F6EB;border-radius:6px;padding:10px 14px;
+       font-size:15px;color:var(--navy);font-weight:600}
+.exans b{color:var(--green)}
+@media(max-width:700px){.exsteps li{grid-template-columns:22px 1fr;gap:8px}}
+.why{border:1.5px solid #CBD9E6;border-radius:9px;margin:18px 0;overflow:hidden;
+     background:linear-gradient(180deg,#F4F9FD 0,#fff 54px)}
+.whyhd{font-size:12px;text-transform:uppercase;letter-spacing:.06em;font-weight:700;
+       color:var(--navy);padding:13px 18px 0}
+.whygrid{display:grid;grid-template-columns:repeat(3,1fr);gap:1px;background:#E3EAF1;
+         margin-top:12px;border-top:1px solid #E3EAF1}
+.wq{background:var(--card);padding:14px 17px 16px}
+.wq h5{margin:0 0 7px;font-size:12px;font-weight:700;letter-spacing:.03em}
+.wq p{margin:0;font-size:14px;line-height:1.62}
+.wq.w1 h5{color:var(--cyan)}
+.wq.w2 h5{color:var(--purple)}
+.wq.w3 h5{color:var(--orange)}
+.wq.w3{background:#FFFBF7}
+@media(max-width:900px){.whygrid{grid-template-columns:1fr}}
+.card{background:var(--card);border:1px solid var(--rule);border-radius:8px;padding:15px 17px}
+.card h4{margin:0 0 7px;font-size:12.5px;text-transform:uppercase;letter-spacing:.05em;color:var(--cyan)}
+.card p{margin:0;font-size:14.5px}
+.take{background:#E4F6EB;border-left:5px solid var(--green);border-radius:6px;padding:12px 16px;margin:14px 0}
+.take b.hd{color:var(--green);text-transform:uppercase;font-size:12.5px;letter-spacing:.05em}
+.take b{color:var(--navy)}
+.warn{background:#FDEEEC;border-left:5px solid var(--orange);border-radius:6px;padding:12px 16px;margin:14px 0}
+.warn b.hd{color:var(--orange);text-transform:uppercase;font-size:12.5px;letter-spacing:.05em}
+.warn b{color:var(--navy)}
+table{border-collapse:collapse;width:100%;font-size:14px;margin:10px 0}
+th,td{border:1px solid var(--rule);padding:7px 10px;text-align:left;vertical-align:top}
+th{background:var(--navy);color:#fff;font-weight:600;font-size:13px}
+tbody tr:nth-child(even){background:#F2F7FB}
+td.hi{background:#FFF3E0;font-weight:700}
+code{background:#EEF3F8;padding:1px 5px;border-radius:4px;font-size:13.5px}
+footer{background:var(--navy);color:#9FB4CA;padding:22px 0;font-size:13.5px}
+
+/* ---------------- formula block ---------------- */
+.formula{background:#F3EEFB;border-left:5px solid var(--purple);border-radius:6px;
+         padding:14px 18px;margin:14px 0;overflow-x:auto}
+.formula .flabel{display:block;font-size:11.5px;font-weight:700;letter-spacing:.05em;
+                 text-transform:uppercase;color:var(--purple);margin-bottom:9px}
+.formula small{display:block;font:13.5px/1.55 "Segoe UI",sans-serif;color:var(--grey);margin-top:10px}
+
+/* ---------------- real maths ---------------- */
+.math{font-family:"Cambria Math",Cambria,"Times New Roman",Georgia,serif;
+      font-size:20px;line-height:2.1;color:var(--navy);white-space:nowrap}
+.math i,.math .var{font-style:italic;font-family:inherit}
+.math .op{font-style:normal;padding:0 .22em}
+.math b.vecb{font-weight:700;font-style:normal}
+.math sub{font-size:.62em;vertical-align:-.3em}
+.math sup{font-size:.62em;vertical-align:.45em}
+.cases{display:inline-flex;align-items:center;vertical-align:middle;margin:0 .2em}
+.cases .cb{font-size:2.5em;font-weight:300;line-height:.86;margin-right:.14em}
+.cases table{border-collapse:collapse;margin:0;width:auto;box-shadow:none;font-size:.86em}
+.cases tbody tr,.cases tbody tr:nth-child(even){border:0;background:none}
+.cases td{border:0;padding:.14em .2em;background:none;white-space:nowrap;
+          line-height:1.5;vertical-align:middle}
+.cases td.cc{font-size:.8em;font-style:normal;color:var(--grey);padding-left:1.5em;
+             font-family:"Segoe UI",system-ui,sans-serif}
+.frac{display:inline-block;vertical-align:-.52em;text-align:center;margin:0 .26em}
+.frac .num{display:block;padding:0 .4em .12em;border-bottom:1.7px solid currentColor;line-height:1.22}
+.frac .den{display:block;padding:.12em .4em 0;line-height:1.22}
+.sqrt{display:inline-block;position:relative;margin:0 .15em}
+.sqrt .rad{font-size:1.12em;vertical-align:-.06em}
+.sqrt .rand{border-top:1.6px solid currentColor;padding:.1em .22em 0 .12em;margin-left:-.12em}
+.bigop{display:inline-block;text-align:center;vertical-align:-.5em;margin:0 .2em;line-height:1}
+.bigop .glyph{display:block;font-size:1.5em;line-height:.88}
+.bigop.int .glyph{font-size:1.75em}
+.bigop .lim{display:block;font-size:.5em;line-height:1.25;font-style:italic}
+.paren{font-size:1.18em;padding:0 .06em}
+.paren.big{font-size:1.5em;vertical-align:-.16em}
+.bar{padding:0 .09em}
+.hat{position:relative;display:inline-block;font-style:italic}
+.hat::after{content:"\0302";position:absolute;left:0;right:0;top:-.46em;
+            text-align:center;font-size:.72em;font-style:normal;line-height:1;
+            font-family:"Cambria Math",Cambria,serif}
+.matrix{display:inline-block;vertical-align:middle;margin:0 .18em}
+.matrix .mb{display:inline-block;font-size:2.1em;vertical-align:middle;font-weight:300}
+.matrix table{display:inline-table;width:auto;border:0;margin:0 .1em;vertical-align:middle}
+.matrix td{border:0;padding:.08em .38em;text-align:center;font-size:.86em;background:none}
+
+/* ---------------- visualisation ---------------- */
+.viz{background:var(--card);border:1px solid var(--rule);border-radius:8px;padding:14px;margin:16px 0}
+.controls{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin-bottom:10px}
+button{font:600 13.5px "Segoe UI",sans-serif;padding:8px 14px;border-radius:6px;
+       border:1px solid var(--cyan);background:var(--cyan);color:#fff;cursor:pointer}
+button:hover{filter:brightness(1.08)}
+button.ghost{background:#fff;color:var(--cyan)}
+button:disabled{opacity:.45;cursor:not-allowed}
+select{font:14px "Segoe UI";padding:7px 9px;border-radius:6px;border:1px solid var(--rule);background:#fff}
+svg{width:100%;height:auto;display:block;background:#fff;border-radius:6px;max-width:1040px;margin:0 auto}
+.status{font-size:15.5px;line-height:1.6;background:#EAF4FA;border-left:4px solid var(--cyan);
+        border-radius:6px;padding:12px 16px;margin-top:12px;min-height:48px;color:var(--navy)}
+.status b{color:var(--cyan)}
+.stepcount{font-size:12.5px;font-weight:700;color:var(--grey);letter-spacing:.03em;
+           margin-left:auto;padding-right:4px;white-space:nowrap}
+.stepcount em{font-style:normal;color:var(--cyan);font-size:14.5px}
+.viz.done .stepcount em{color:var(--green)}
+.legend{display:flex;flex-wrap:wrap;gap:14px;font-size:13px;color:var(--grey);margin-top:9px;justify-content:center}
+.legend i{display:inline-block;width:12px;height:12px;border-radius:50%;margin-right:5px;vertical-align:-1px}
+</style>
+</head>
+<body class="">
+<header><div class="wrap">
+  <div class="eyebrow">CSE252 &middot; Introduction to AI and Machine Learning &middot; Unit IV</div>
+  <h1>Unsupervised Learning &mdash; Visual Walkthrough</h1>
+  <p>Four ways of finding structure in unlabelled data, each one animated. Press <b>Step</b> and watch the centroids move, the dendrogram grow, the density spread and the candidate itemsets get pruned.</p>
+</div></header>
+<nav><div class="wrap"><ul><li><a href="#what">1 &middot; What it is</a></li><li><a href="#kmeans">2 &middot; k-Means</a></li><li><a href="#hier">3 &middot; Hierarchical</a></li><li><a href="#dbscan">4 &middot; DBSCAN</a></li><li><a href="#pca">5 &middot; PCA</a></li><li><a href="#assoc">6 &middot; Association rules</a></li><li><a href="#robot">7 &middot; In robotics</a></li></ul></div></nav>
+<section id="what"><div class="wrap"><h2><span class="num">1</span>What unsupervised learning is</h2><p class="lede">In supervised learning somebody hands you the answers and you learn the mapping. In unsupervised learning nobody does &mdash; you are given the inputs alone and asked what structure is in them.</p><div class="why"><div class="whyhd">Why this, and why not something else</div><div class="whygrid"><div class="wq w1"><h5>Why we do this</h5><p>Labels are expensive. Someone has to sit down and mark ten thousand emails as spam or not. Unlabelled data is free and already sitting in your database &mdash; so methods that need no labels are the only ones that can be applied at the scale most data actually exists at.</p></div><div class="wq w2"><h5>Why not just do the simpler thing?</h5><p><b>&ldquo;Why not just label some of it and use supervised learning?&rdquo;</b> Often you should. But for some questions there is nothing to label: nobody can tell you the “correct” customer segment, because the segments are what you are trying to discover. Asking a human to label them first would mean already knowing the answer.</p></div><div class="wq w3"><h5>What goes wrong if you skip it</h5><p>You treat the algorithm's output as a discovery rather than a proposal. k-Means with <i>k</i> = 3 returns three clusters on <b>any</b> data, including pure noise, and it reports them with exactly the same confidence either way.</p></div></div></div><div class="grid"><div><div class="grid"><div class="card"><h4>Supervised</h4><p>Data is <span class="paren">(</span><i>x</i><sub><i>i</i></sub>, <i>y</i><sub><i>i</i></sub><span class="paren">)</span> pairs. There is a right answer, so there is an error to minimise and a test score to report.</p></div></div></div><div><div class="grid"><div class="card"><h4>Unsupervised</h4><p>Data is <i>x</i><sub><i>i</i></sub> only. There is no right answer, so success is judged by whether the structure found is <i>useful</i> &mdash; which is why evaluation is genuinely harder.</p></div></div></div></div><table><thead><tr><th>Task</th><th>What it finds</th><th>Example on the syllabus</th></tr></thead><tbody><tr><td>Clustering</td><td>groups of similar points</td><td>k-Means, hierarchical, DBSCAN</td></tr><tr><td>Dimensionality reduction</td><td>a smaller set of informative directions</td><td>PCA</td></tr><tr><td>Association rule mining</td><td>items that co-occur</td><td>Apriori</td></tr><tr><td>Anomaly detection</td><td>points unlike the rest</td><td>DBSCAN noise points</td></tr></tbody></table><div class="take"><b class="hd">The honest caveat</b><br>Run k-Means with <i>k</i> = 3 on data with no real groups and it will still return three clusters, perfectly confidently. An unsupervised algorithm always produces output; whether that output means anything is a separate question, and Unit V is where you learn to ask it.</div><div class="ex"><div class="exhd">Worked example &mdash; telling the three tasks apart from the data alone</div><div class="exgiven">Four datasets arrive. Decide what kind of learning each one supports &mdash; which is determined entirely by what feedback is available, not by what you would like to do.</div><ol class="exsteps"><li><div class="exb"><span class="exl">10 000 emails, each already marked spam / not spam</span><span class="exw">every row carries its answer &#8594; <b>supervised</b> (classification)</span></div></li><li><div class="exb"><span class="exl">2 million customer records, no annotations of any kind</span><span class="exw">no answers exist &#8594; <b>unsupervised</b> (clustering)</span></div></li><li><div class="exb"><span class="exl">A robot arm, plus a score after each attempted grasp</span><span class="exw">no correct action is known, only a reward afterwards &#8594; <b>reinforcement</b></span></div></li><li><div class="exb"><span class="exl">500 labelled X-rays and 50 000 unlabelled ones</span><span class="exw">a little supervision plus a lot of structure &#8594; <b>semi-supervised</b></span></div></li><li><div class="exb"><span class="exl">The test that decides it in every case</span><span class="exw">ask: <i>for a single training example, do I have the answer?</i> If yes, supervised. If no but I can score an action, reinforcement. If no and I cannot, unsupervised.</span></div></li></ol><div class="exans">Nothing here depended on the algorithm. <b>The feedback available decides the task</b>, and the task then decides which algorithms are even candidates.</div></div></div></section>
+<section id="kmeans"><div class="wrap"><h2><span class="num">2</span>k-Means clustering</h2><p class="lede">Pick <i>k</i> centres, assign every point to its nearest centre, move each centre to the mean of what it got, and repeat until nothing moves.</p><div class="why"><div class="whyhd">Why this, and why not something else</div><div class="whygrid"><div class="wq w1"><h5>Why we do this</h5><p>k-Means is the first clustering method to try because it is fast, simple and scales to millions of points. Each iteration is two easy steps, and the objective it minimises &mdash; total squared distance to the cluster centre &mdash; can only go down, so it always terminates.</p></div><div class="wq w2"><h5>Why not just do the simpler thing?</h5><p><b>&ldquo;Why not just look at a scatter plot?&rdquo;</b> That works in two dimensions and stops working in ten, which is where most real data lives. <b>&ldquo;Why not try every possible grouping?&rdquo;</b> The number of ways to split <i>n</i> points into <i>k</i> groups is astronomically large &mdash; k-Means finds a good local answer in a handful of passes instead.</p></div><div class="wq w3"><h5>What goes wrong if you skip it</h5><p>You take the first run as the answer. k-Means converges to a <b>local</b> minimum that depends on where the centres started, so two runs on identical data can give different clusters. Running it once and reporting the result is the most common way to get a worse answer than the data supports &mdash; which is why k-means++ and multiple restarts exist.</p></div></div></div><div class="formula"><span class="flabel">Step 1: assignment</span><div class="math"><span class="op">assign</span>:&nbsp; <i>C</i><sub><i>k</i></sub> = <span class="paren">[</span><i>x</i><sub><i>i</i></sub>&nbsp;:&nbsp; <span class="bar">&#8214;</span><i>x</i><sub><i>i</i></sub> &#8722; <i>&mu;</i><sub><i>k</i></sub><span class="bar">&#8214;</span> &#8804; <span class="bar">&#8214;</span><i>x</i><sub><i>i</i></sub> &#8722; <i>&mu;</i><sub><i>j</i></sub><span class="bar">&#8214;</span>&nbsp; <span class="op">for all</span> <i>j</i><span class="paren">]</span></div><small>Each point goes to whichever centre is closest &mdash; ties broken arbitrarily.</small></div><div class="formula"><span class="flabel">Step 2: update</span><div class="math"><span class="op">update</span>:&nbsp; <i>&mu;</i><sub><i>k</i></sub> = <span class="frac"><span class="num">1</span><span class="den">|<i>C</i><sub><i>k</i></sub>|</span></span><span class="bigop"><span class="lim">&nbsp;</span><span class="glyph">&#8721;</span><span class="lim"><i>x</i><sub><i>i</i></sub> &#8712; <i>C</i><sub><i>k</i></sub></span></span>&nbsp;<i>x</i><sub><i>i</i></sub></div><small>Each centre moves to the average of the points that chose it. These two steps alternate, and each one can only lower the objective below.</small></div><div class="formula"><span class="flabel">The objective</span><div class="math"><span class="op">SSE</span> = <span class="bigop"><span class="lim"><i>K</i></span><span class="glyph">&#8721;</span><span class="lim"><i>k</i>=1</span></span>&nbsp;<span class="bigop"><span class="lim">&nbsp;</span><span class="glyph">&#8721;</span><span class="lim"><i>x</i><sub><i>i</i></sub> &#8712; <i>C</i><sub><i>k</i></sub></span></span>&nbsp;<span class="bar">&#8214;</span><i>x</i><sub><i>i</i></sub> &#8722; <i>&mu;</i><sub><i>k</i></sub><span class="bar">&#8214;</span><sup>2</sup></div><small><b>What k-Means actually minimises</b> &mdash; the within-cluster sum of squared distances. It falls at every step, which is why the algorithm always terminates.</small></div><h3>Lloyd's algorithm on 7 points, <i>k</i> = 2</h3><p class="lede">The two centres start sitting on points <b>A</b> and <b>D</b> &mdash; a deliberately lopsided initialisation, so you can watch them pull apart and see that the first assignment is not the final one.</p><div class="viz" id="wrap-km"><div class="controls"><button class="ghost" data-act="back" data-viz="km">&#9664; Back</button><button data-act="step" data-viz="km">Step &#9654;</button><button class="ghost" data-act="auto" data-viz="km">Auto-play</button><button class="ghost" data-act="reset" data-viz="km">Reset</button><span class="stepcount" id="sc-km">step <em>0</em> of 0</span></div><svg id="svg-km" viewBox="0 0 560 330"></svg><div class="status" id="st-km"></div></div><div class="warn"><b class="hd">Three things that bite</b><br><b>k must be chosen in advance</b> and the algorithm cannot tell you it was wrong. <b>The result depends on the initialisation</b> &mdash; a bad start converges to a worse SSE, which is why k-means++ and multiple restarts exist. <b>It assumes round, equally-sized clusters</b>, because the only thing it ever computes is distance to a centre.</div><div class="ex"><div class="exhd">Worked example &mdash; one full iteration of Lloyd's algorithm</div><div class="exgiven">Seven points A(1,1) B(1.5,2) C(3,4) D(5,7) E(3.5,5) F(4.5,5) G(3.5,4.5), with <i>k</i> = 2 and the centres deliberately started on A and D.</div><ol class="exsteps"><li><div class="exb"><span class="exl">Step 1 &mdash; measure every point to both centres</span><span class="exw">e.g. for C(3,4): to <i>&mu;</i><sub>1</sub>(1,1) is <span class="sqrt"><span class="rad">&#8730;</span><span class="rand">(3&#8722;1)<sup>2</sup> + (4&#8722;1)<sup>2</sup></span></span> = <span class="sqrt"><span class="rad">&#8730;</span><span class="rand">13</span></span> = <b>3.606</b>; to <i>&mu;</i><sub>2</sub>(5,7) is <span class="sqrt"><span class="rad">&#8730;</span><span class="rand">4 + 9</span></span> = <b>3.606</b> as well</span></div></li><li><div class="exb"><span class="exl">Break the tie and assign everything</span><span class="exw">C is exactly equidistant, so the tie-break sends it to cluster 1. Result: cluster 1 = {A, B, C}, cluster 2 = {D, E, F, G}</span></div></li><li><div class="exb"><span class="exl">Step 2 &mdash; move each centre to the mean of its members</span><span class="exw"><i>&mu;</i><sub>1</sub> = <span class="paren">(</span><span class="frac"><span class="num">1 + 1.5 + 3</span><span class="den">3</span></span>, <span class="frac"><span class="num">1 + 2 + 4</span><span class="den">3</span></span><span class="paren">)</span> = <b>(1.833, 2.333)</b></span></div></li><li><div class="exb"><span class="exl">And the second centre</span><span class="exw"><i>&mu;</i><sub>2</sub> = <span class="paren">(</span><span class="frac"><span class="num">5 + 3.5 + 4.5 + 3.5</span><span class="den">4</span></span>, <span class="frac"><span class="num">7 + 5 + 5 + 4.5</span><span class="den">4</span></span><span class="paren">)</span> = <b>(4.125, 5.375)</b></span></div></li><li><div class="exb"><span class="exl">Repeat until nothing moves</span><span class="exw">the next round reassigns C to cluster 2, and after that the centres settle at (1.25, 1.5) and (3.9, 5.1)</span></div></li><li><div class="exb"><span class="exl">Final within-cluster sum of squares</span><span class="exw">SSE = <b>8.525</b></span></div></li></ol><div class="exans">Note step 2: the centre that started on A travelled all the way to <b>(1.25, 1.5)</b>. The first assignment is never the final one &mdash; and point C, sitting on the boundary, changed cluster between iterations.</div></div></div></section>
+<section id="hier"><div class="wrap"><h2><span class="num">3</span>Hierarchical clustering</h2><p class="lede">Instead of committing to <i>k</i> up front, build the whole nesting: start with every point its own cluster and repeatedly merge the two closest.</p><div class="why"><div class="whyhd">Why this, and why not something else</div><div class="whygrid"><div class="wq w1"><h5>Why we do this</h5><p>Hierarchical clustering refuses to commit to <i>k</i>. It builds the entire nesting of groupings &mdash; from every point alone up to one big cluster &mdash; and lets you choose afterwards by cutting the tree wherever the structure looks real.</p></div><div class="wq w2"><h5>Why not just do the simpler thing?</h5><p><b>&ldquo;Why not just use k-Means?&rdquo;</b> Because k-Means demands <i>k</i> before it will tell you anything, and often <i>k</i> is exactly what you do not know. The dendrogram also shows you <i>how much</i> structure there is at each level, which a flat clustering cannot. The cost is O(<i>n</i><sup>2</sup>) memory, so it does not scale to millions of points the way k-Means does.</p></div><div class="wq w3"><h5>What goes wrong if you skip it</h5><p>You pick a linkage without thinking and get a different answer. Single linkage chains long thin groups together; complete linkage forces compact balls. On the same five points these produce <b>different trees</b> &mdash; so quoting “the hierarchical clustering” without naming the linkage is meaningless.</p></div></div></div><table><thead><tr><th>Linkage</th><th>Distance between clusters</th><th>Tends to produce</th></tr></thead><tbody><tr><td><b>Single</b></td><td>nearest pair of members</td><td>long chains; follows thin structures</td></tr><tr><td><b>Complete</b></td><td>furthest pair of members</td><td>compact, roughly equal clusters</td></tr><tr><td><b>Average</b></td><td>mean over all member pairs</td><td>a compromise between the two</td></tr><tr><td><b>Ward</b></td><td>increase in SSE caused by merging</td><td>clusters of similar size</td></tr></tbody></table><h3>The same five points, two linkages, two different answers</h3><p class="lede">Switch the linkage and watch the merge order change. This is not a detail &mdash; it is the whole reason the choice of linkage matters.</p><div class="viz" id="wrap-hier"><div class="controls"><button class="ghost" data-act="back" data-viz="hier">&#9664; Back</button><button data-act="step" data-viz="hier">Step &#9654;</button><button class="ghost" data-act="auto" data-viz="hier">Auto-play</button><button class="ghost" data-act="reset" data-viz="hier">Reset</button><span class="stepcount" id="sc-hier">step <em>0</em> of 0</span></div><svg id="svg-hier" viewBox="0 0 560 292"></svg><div class="controls" style="margin:10px 0 0;justify-content:center"><span style="font-weight:600">Linkage:</span><select id="selLink"><option value="single">Single (nearest)</option><option value="complete">Complete (furthest)</option></select></div><div class="status" id="st-hier"></div></div><div class="take"><b class="hd">Reading a dendrogram</b><br>The height at which two clusters join is the distance at which they merged. To get a flat clustering, cut the tree horizontally &mdash; the number of vertical lines your cut crosses is the number of clusters. A cut through a tall gap is a more defensible clustering than one through a crowded region.</div><div class="ex"><div class="exhd">Worked example &mdash; two linkages on the same five points, step by step</div><div class="exgiven">P(7, 3.5) Q(9.5, 5) R(5, 9.5) S(5, 1.5) T(2, 4.5). Key distances: d(P,S) = 2.828, d(P,Q) = 2.915, d(P,T) = 5.099, d(Q,R) = 6.364, d(R,S) = 8.000.</div><ol class="exsteps"><li><div class="exb"><span class="exl">Both linkages start identically &mdash; merge the closest pair</span><span class="exw">the smallest distance anywhere is d(P, S) = <b>2.828</b> &#8594; merge to (PS)</span></div></li><li><div class="exb"><span class="exl"><b>Single</b> linkage, step 2: distance to a cluster is its <i>nearest</i> member</span><span class="exw">d(Q, (PS)) = min(2.915, 5.701) = <b>2.915</b> &mdash; the smallest remaining, so Q joins &#8594; (Q(PS))</span></div></li><li><div class="exb"><span class="exl"><b>Complete</b> linkage, step 2: distance is the <i>furthest</i> member</span><span class="exw">d(Q, (PS)) = max(2.915, 5.701) = 5.701, but d(T, (PS)) = max(5.099, 4.243) = <b>5.099</b> is smaller &#8594; <b>T</b> joins instead, giving (T(PS))</span></div></li><li><div class="exb"><span class="exl">Follow each to the end</span><span class="exw">single: P+S, then Q, then T, then R &mdash; one point at a time, a <b>chain</b><br>complete: P+S, then T, then Q+R forms separately, then the two groups merge</span></div></li><li><div class="exb"><span class="exl">Read off a 2-cluster solution by cutting each tree</span><span class="exw">single gives {P,S,Q,T} and {R}; complete gives {T,P,S} and {Q,R}</span></div></li></ol><div class="exans">Same points, same distances, <b>two different answers</b> &mdash; and complete linkage's is the more balanced one. That difference is entirely the linkage rule, which is why it has to be stated.</div></div></div></section>
+<section id="dbscan"><div class="wrap"><h2><span class="num">4</span>DBSCAN &mdash; density-based clustering</h2><p class="lede">Clusters are dense regions separated by sparse ones. Nothing is assumed about shape, <i>k</i> is never specified, and points in no dense region are simply labelled noise.</p><div class="why"><div class="whyhd">Why this, and why not something else</div><div class="whygrid"><div class="wq w1"><h5>Why we do this</h5><p>DBSCAN defines a cluster as a <b>dense region</b> rather than as a ball around a centre. That one change buys three things k-Means cannot offer: clusters of any shape, no need to choose <i>k</i>, and an explicit label for points that belong nowhere.</p></div><div class="wq w2"><h5>Why not just do the simpler thing?</h5><p><b>&ldquo;Why not k-Means, it is faster?&rdquo;</b> k-Means assigns <i>every</i> point to a cluster, so a single far-off outlier drags a centre toward it and corrupts a real group. It also only ever produces round clusters, so two interleaved crescents come out cut in half. <b>&ldquo;Why not hierarchical?&rdquo;</b> It has no notion of noise either, and costs O(<i>n</i><sup>2</sup>) memory.</p></div><div class="wq w3"><h5>What goes wrong if you skip it</h5><p>Choose <i>&epsilon;</i> badly and you get one of two useless extremes: too small and <b>every point is noise</b>; too large and <b>everything merges into one cluster</b>. Neither failure raises an error &mdash; you simply get a labelling that means nothing.</p></div></div></div><div class="formula"><span class="flabel">The two definitions everything rests on</span><div class="math"><i>N</i><sub><i>&epsilon;</i></sub><span class="paren">(</span><i>p</i><span class="paren">)</span> = <span class="paren">[</span><i>q</i> &#8712; <i>D</i>&nbsp;:&nbsp; <span class="op">dist</span><span class="paren">(</span><i>p</i>, <i>q</i><span class="paren">)</span> &#8804; <i>&epsilon;</i><span class="paren">]</span>,&nbsp;&nbsp;&nbsp;<i>p</i> <span class="op">is core</span> &#8660; <span class="bar">|</span><i>N</i><sub><i>&epsilon;</i></sub><span class="paren">(</span><i>p</i><span class="paren">)</span><span class="bar">|</span> &#8805; <span class="op">minPts</span></div><small>The <i>&epsilon;</i>-neighbourhood <b>includes the point itself</b>, so a core point with minPts = 3 needs two other points within <i>&epsilon;</i>.</small></div><div class="grid"><div class="card"><h4>Core point</h4><p>Has at least minPts points within <i>&epsilon;</i> (itself counted). These are the interior of a cluster.</p></div><div class="card"><h4>Border point</h4><p>Fewer than minPts neighbours, but lies within <i>&epsilon;</i> of some core point. It joins that core point's cluster but cannot grow it.</p></div><div class="card"><h4>Noise point</h4><p>Neither &mdash; not dense itself and not close to anything dense. DBSCAN is the only one of the three algorithms here that is allowed to say <i>this point belongs nowhere</i>.</p></div></div><h3>Eight points, <i>&epsilon;</i> = 1.5, minPts = 3</h3><div class="viz" id="wrap-dbs"><div class="controls"><button class="ghost" data-act="back" data-viz="dbs">&#9664; Back</button><button data-act="step" data-viz="dbs">Step &#9654;</button><button class="ghost" data-act="auto" data-viz="dbs">Auto-play</button><button class="ghost" data-act="reset" data-viz="dbs">Reset</button><span class="stepcount" id="sc-dbs">step <em>0</em> of 0</span></div><svg id="svg-dbs" viewBox="0 0 560 340"></svg><div class="status" id="st-dbs"></div><div class="legend"><span><i style="background:#0096C7"></i>core</span><span><i style="background:#ED771F"></i>border</span><span><i style="background:#B42318"></i>noise</span><span><i style="background:#D8DFE8"></i>not yet visited</span></div></div><div class="warn"><b class="hd">Choosing <i>&epsilon;</i> and minPts</b><br>A common rule of thumb is minPts &#8805; <i>D</i> + 1 where <i>D</i> is the number of dimensions. For <i>&epsilon;</i>, sort every point's distance to its <span class="op">minPts</span>-th nearest neighbour, plot those sorted distances, and take the value at the sharp elbow. Too small and everything is noise; too large and everything merges into one cluster.</div><div class="ex"><div class="exhd">Worked example &mdash; classifying every point as core, border or noise</div><div class="exgiven">Eight points with <i>&epsilon;</i> = 1.5 and minPts = 3. A(8, 5.5) B(1.5, 8) C(8.5, 5) D(8.5, 3.5) E(7.5, 6) F(1.5, 9) G(2, 8.5) H(3.5, 2). <b>The neighbourhood always includes the point itself.</b></div><ol class="exsteps"><li><div class="exb"><span class="exl">Point A &mdash; list everything within 1.5</span><span class="exw">d(A,C) = <span class="sqrt"><span class="rad">&#8730;</span><span class="rand">0.25 + 0.25</span></span> = 0.707, d(A,E) = 0.707, and A itself &#8594; N(A) = {A, C, E}, |N| = <b>3</b> &#8805; 3 &#8594; <b>core</b></span></div></li><li><div class="exb"><span class="exl">Point C</span><span class="exw">N(C) = {A, C, D, E}, |N| = <b>4</b> &#8805; 3 &#8594; <b>core</b></span></div></li><li><div class="exb"><span class="exl">Point D &mdash; the interesting one</span><span class="exw">d(D,C) = 1.5 &#8804; 1.5 &#8594; C is in; nothing else is. N(D) = {C, D}, |N| = <b>2</b> &lt; 3 &#8594; <b>not core</b></span></div></li><li><div class="exb"><span class="exl">But D is not noise either</span><span class="exw">D lies within <i>&epsilon;</i> of <b>C, which is a core point</b> &#8594; D is a <b>border</b> point and joins C's cluster</span></div></li><li><div class="exb"><span class="exl">Point H</span><span class="exw">N(H) = {H} alone, |N| = <b>1</b>, and no core point is within <i>&epsilon;</i> &#8594; <b>noise</b></span></div></li><li><div class="exb"><span class="exl">Join the core points that are within <i>&epsilon;</i> of each other</span><span class="exw">{A, C, E} form one cluster (D attaches as border); {B, F, G} form another</span></div></li></ol><div class="exans"><b>Two clusters, {A, C, D, E} and {B, F, G}, with H as noise.</b> <i>k</i> was never supplied &mdash; the density decided how many there were. Note that a border point joins a cluster but <b>cannot be used to extend it</b>, which is why D does not pull anything else in.</div></div></div></section>
+<section id="pca"><div class="wrap"><h2><span class="num">5</span>Principal Component Analysis</h2><p class="lede">Find the direction along which the data varies most, and use it as the new first axis. Reduce dimensions by keeping only the first few such directions.</p><div class="why"><div class="whyhd">Why this, and why not something else</div><div class="whygrid"><div class="wq w1"><h5>Why we do this</h5><p>PCA finds the directions along which your data actually varies, and lets you keep only those. It is fast, it is deterministic, and it tells you exactly what fraction of the information each component retains &mdash; so you can make the keep-or-drop decision on evidence rather than by feel.</p></div><div class="wq w2"><h5>Why not just do the simpler thing?</h5><p><b>&ldquo;Why not just drop the columns that look unimportant?&rdquo;</b> Because information is usually spread <i>across</i> correlated columns rather than sitting in any one of them &mdash; two mediocre features can jointly carry what neither carries alone. PCA builds new axes from combinations instead of discarding originals.</p></div><div class="wq w3"><h5>What goes wrong if you skip it</h5><p>Forget to <b>standardise</b> and PCA simply reports whichever feature has the biggest units. Salary in rupees will dominate age in years purely because the numbers are larger, and the first principal component will be “salary” &mdash; correct arithmetic, worthless result.</p></div></div></div><div class="formula"><span class="flabel">Covariance and its eigenvectors</span><div class="math"><i>C</i> = <span class="frac"><span class="num">1</span><span class="den"><i>n</i> &#8722; 1</span></span><span class="bigop"><span class="lim"><i>n</i></span><span class="glyph">&#8721;</span><span class="lim"><i>i</i>=1</span></span>&nbsp;<span class="paren">(</span><i>x</i><sub><i>i</i></sub> &#8722; <i>x&#772;</i><span class="paren">)</span><span class="paren">(</span><i>x</i><sub><i>i</i></sub> &#8722; <i>x&#772;</i><span class="paren">)</span><sup>T</sup>,&nbsp;&nbsp;&nbsp;<i>C</i><i>u</i> = &#955;<i>u</i></div><small>Centre the data, build the covariance matrix, then take its eigenvectors. The eigenvector with the largest eigenvalue is the first principal component, and its eigenvalue <b>is</b> the variance along that direction.</small></div><div class="formula"><span class="flabel">Explained variance</span><div class="math"><span class="op">explained variance of PC</span><sub><i>k</i></sub> = <span class="frac"><span class="num">&#955;<sub><i>k</i></sub></span><span class="den"><span class="bigop"><span class="lim"><i>d</i></span><span class="glyph">&#8721;</span><span class="lim"><i>j</i>=1</span></span>&nbsp;&#955;<sub><i>j</i></sub></span></span></div><small>How much of the total spread one component accounts for. Keep components until this cumulative fraction reaches whatever you are willing to settle for &mdash; 90% and 95% are the usual choices.</small></div><h3>Rotate the axis and watch the variance</h3><p class="lede">Five points, already centred. Drag the angle and watch the projected spread. The variance is maximised at exactly 45&deg;, and that direction is the first principal component.</p><div class="viz" id="wrap-pca"><svg id="svg-pca" viewBox="0 0 560 330"></svg><div class="controls" style="margin:10px 0 0;justify-content:center"><span style="font-weight:600">angle &theta; =</span><input id="pcaSlider" type="range" min="0" max="180" value="20" style="width:250px;vertical-align:middle"><span id="pcaVal" style="font-weight:700;color:var(--cyan)">20&deg;</span></div><div class="status" id="st-pca"></div></div><div class="take"><b class="hd">Why the eigenvector is the answer</b><br>The variance of the data projected onto a unit direction <i>u</i> is <i>u</i><sup>T</sup><i>C</i><i>u</i>. Maximising that subject to <span class="bar">&#8214;</span><i>u</i><span class="bar">&#8214;</span> = 1 is exactly the eigenvalue problem <i>C</i><i>u</i> = &#955;<i>u</i>, and the maximum value attained is the largest eigenvalue. So "the direction of greatest variance" and "the top eigenvector" are the same sentence written twice.</div><div class="warn"><b class="hd">Scale first</b><br>PCA maximises variance, and variance has units. A feature measured in grams will dominate the same feature measured in kilograms. Standardise every feature to mean 0 and variance 1 before running PCA unless the features are already in comparable units.</div><div class="ex"><div class="exhd">Worked example &mdash; PCA on five points, computed by hand</div><div class="exgiven">Points (1,1) (2,3) (3,2) (4,5) (5,4). Both features are already on the same scale, so no standardisation is needed here.</div><ol class="exsteps"><li><div class="exb"><span class="exl">Centre the data on its mean</span><span class="exw"><i>&#772;x</i> = (3, 3) &#8594; centred points (&#8722;2,&#8722;2) (&#8722;1,0) (0,&#8722;1) (1,2) (2,1)</span></div></li><li><div class="exb"><span class="exl">Build the 2&times;2 covariance matrix (divide by <i>n</i> &#8722; 1 = 4)</span><span class="exw">var(<i>x</i>) = <span class="frac"><span class="num">4+1+0+1+4</span><span class="den">4</span></span> = <b>2.5</b>, &nbsp;var(<i>y</i>) = <b>2.5</b>, &nbsp;cov = <span class="frac"><span class="num">4+0+0+2+2</span><span class="den">4</span></span> = <b>2.0</b></span></div></li><li><div class="exb"><span class="exl">Write the characteristic equation det(<i>C</i> &#8722; &#955;<i>I</i>) = 0</span><span class="exw">(2.5 &#8722; &#955;)<sup>2</sup> &#8722; 2<sup>2</sup> = 0 &nbsp;&#8594;&nbsp; &#955;<sup>2</sup> &#8722; 5&#955; + 2.25 = 0</span></div></li><li><div class="exb"><span class="exl">Solve for the eigenvalues</span><span class="exw">&#955; = 2.5 &#177; 2 &nbsp;&#8594;&nbsp; &#955;<sub>1</sub> = <b>4.5</b>, &#955;<sub>2</sub> = <b>0.5</b></span></div></li><li><div class="exb"><span class="exl">Find the first eigenvector</span><span class="exw">(2.5 &#8722; 4.5)<i>u</i><sub>1</sub> + 2<i>u</i><sub>2</sub> = 0 &#8594; <i>u</i><sub>1</sub> = <i>u</i><sub>2</sub> &#8594; <i>u</i> = (0.7071, 0.7071), i.e. <b>45&deg;</b></span></div></li><li><div class="exb"><span class="exl">Compute the explained variance</span><span class="exw"><span class="frac"><span class="num">4.5</span><span class="den">4.5 + 0.5</span></span> = <b>90%</b></span></div></li></ol><div class="exans"><b>One dimension captures 90% of the spread.</b> Drag the angle slider above to 45&deg; and the measured variance reads 4.5 &mdash; exactly &#955;<sub>1</sub>, because the top eigenvalue <i>is</i> the variance along the top eigenvector.</div></div></div></section>
+<section id="assoc"><div class="wrap"><h2><span class="num">6</span>Association rule mining and Apriori</h2><p class="lede">From a pile of shopping baskets, find the rules of the form <i>people who buy these also buy that</i> &mdash; and work out which of those rules are actually worth anything.</p><div class="why"><div class="whyhd">Why this, and why not something else</div><div class="whygrid"><div class="wq w1"><h5>Why we do this</h5><p>Transaction data is enormous, unlabelled and full of co-occurrences that are pure coincidence. Association rule mining is a disciplined way to separate the patterns worth acting on from the ones that merely happen often.</p></div><div class="wq w2"><h5>Why not just do the simpler thing?</h5><p><b>&ldquo;Why not just count the most popular pairs?&rdquo;</b> Because the most frequent pairs are simply the most popular <i>items</i>, which you already knew. The value is in finding pairs that occur together <b>more than their individual popularity explains</b> &mdash; and that is what lift measures and raw counts cannot.</p></div><div class="wq w3"><h5>What goes wrong if you skip it</h5><p>You rank rules by <b>confidence</b> and act on the top ones. A rule predicting something that happens in 5 of 7 baskets anyway will show high confidence for free, while being worse than useless &mdash; its lift is below 1, meaning the antecedent makes the consequent <i>less</i> likely.</p></div></div></div><div class="formula"><span class="flabel">Support and confidence</span><div class="math"><span class="op">support</span><span class="paren">(</span><i>A</i><span class="paren">)</span> = <span class="frac"><span class="num"><span class="op">baskets containing</span> <i>A</i></span><span class="den"><span class="op">all baskets</span></span></span>,&nbsp;&nbsp;&nbsp;&nbsp;<span class="op">confidence</span><span class="paren">(</span><i>A</i> &#8594; <i>B</i><span class="paren">)</span> = <span class="frac"><span class="num"><span class="op">support</span><span class="paren">(</span><i>A</i> &#8746; <i>B</i><span class="paren">)</span></span><span class="den"><span class="op">support</span><span class="paren">(</span><i>A</i><span class="paren">)</span></span></span></div><small>Support is how often the combination happens at all. Confidence is how often <i>B</i> shows up <b>given</b> that <i>A</i> did.</small></div><div class="formula"><span class="flabel">Lift</span><div class="math"><span class="op">lift</span><span class="paren">(</span><i>A</i> &#8594; <i>B</i><span class="paren">)</span> = <span class="frac"><span class="num"><span class="op">confidence</span><span class="paren">(</span><i>A</i> &#8594; <i>B</i><span class="paren">)</span></span><span class="den"><span class="op">support</span><span class="paren">(</span><i>B</i><span class="paren">)</span></span></span></div><small><b>Lift is the one that matters.</b> It compares the rule against pure chance. Lift &gt; 1 means <i>A</i> makes <i>B</i> <i>more</i> likely; lift = 1 means they are independent and the rule is worthless however high its confidence; lift &lt; 1 means <i>A</i> makes <i>B</i> <i>less</i> likely.</small></div><h3>Apriori on seven baskets, minimum support 3</h3><p class="lede">The Apriori principle: <b>if an itemset is frequent, every subset of it is frequent too</b> &mdash; so if any subset is infrequent, the itemset cannot possibly be frequent and never needs counting. That one observation is what makes the search tractable.</p><div class="viz" id="wrap-apri"><div class="controls"><button class="ghost" data-act="back" data-viz="apri">&#9664; Back</button><button data-act="step" data-viz="apri">Step &#9654;</button><button class="ghost" data-act="auto" data-viz="apri">Auto-play</button><button class="ghost" data-act="reset" data-viz="apri">Reset</button><span class="stepcount" id="sc-apri">step <em>0</em> of 0</span></div><svg id="svg-apri" viewBox="0 0 560 305"></svg><div class="status" id="st-apri"></div></div><h3>Why confidence alone will mislead you</h3><div class="viz" id="wrap-rules"><svg id="svg-rules" viewBox="0 0 560 250"></svg><div class="status" id="st-rules"></div></div><div class="take"><b class="hd">Read the lift column first</b><br>Both rules below have confidence 0.60. One has lift 1.40 and is a genuine pattern; the other has lift 0.84, meaning the antecedent actually makes the consequent <i>less</i> likely than it already was. Confidence alone cannot tell them apart, because a consequent that is common anyway will produce high confidence for free.</div><div class="ex"><div class="exhd">Worked example &mdash; computing support, confidence and lift for one rule</div><div class="exgiven">Seven baskets: {E,J} {B,J,M,U} {E,U} {E,M,U} {B,J,M,U} {B,J,U} {J,M}. B=Bread, J=Jam, U=Butter, M=Milk, E=Eggs. Test the rule <b>{Bread} &#8594; {Jam, Butter}</b>.</div><ol class="exsteps"><li><div class="exb"><span class="exl">Count how often Bread appears</span><span class="exw">baskets 2, 5, 6 &#8594; supp(B) = <span class="frac"><span class="num">3</span><span class="den">7</span></span> = <b>0.4286</b></span></div></li><li><div class="exb"><span class="exl">Count how often all three appear together</span><span class="exw">{B, J, U} is in baskets 2, 5, 6 &#8594; supp(B &#8746; J &#8746; U) = <span class="frac"><span class="num">3</span><span class="den">7</span></span> = <b>0.4286</b></span></div></li><li><div class="exb"><span class="exl">Confidence &mdash; of the Bread baskets, how many also had Jam and Butter?</span><span class="exw">conf = <span class="frac"><span class="num">supp(B, J, U)</span><span class="den">supp(B)</span></span> = <span class="frac"><span class="num">3/7</span><span class="den">3/7</span></span> = <b>1.000</b> &mdash; every single one</span></div></li><li><div class="exb"><span class="exl">Count the consequent on its own</span><span class="exw">{J, U} together appear in baskets 2, 5, 6 &#8594; supp(J, U) = <span class="frac"><span class="num">3</span><span class="den">7</span></span> = 0.4286</span></div></li><li><div class="exb"><span class="exl">Lift &mdash; compare the confidence against chance</span><span class="exw">lift = <span class="frac"><span class="num">conf</span><span class="den">supp(J, U)</span></span> = <span class="frac"><span class="num">1.000</span><span class="den">0.4286</span></span> = <b>2.333</b></span></div></li><li><div class="exb"><span class="exl">Interpret</span><span class="exw">lift &gt; 1, so buying Bread makes Jam-and-Butter <b>2.3&times; more likely</b> than the baseline rate &mdash; a real pattern, not a coincidence</span></div></li></ol><div class="exans">Compare with <b>{Jam} &#8594; {Butter}</b> on the same data: confidence 0.600 but lift <b>0.84</b>. Butter is in 5 of 7 baskets regardless, so knowing about Jam makes it <i>less</i> likely. <b>Identical-looking confidence, opposite conclusions</b> &mdash; which is the entire argument for reading lift.</div></div></div></section>
+<section id="robot"><div class="wrap"><h2><span class="num">7</span>Unsupervised methods in robotics and sensor processing</h2><p class="lede">Robots generate enormous quantities of unlabelled data and almost no labelled data, which is exactly the setting these methods were built for.</p><div class="why"><div class="whyhd">Why this, and why not something else</div><div class="whygrid"><div class="wq w1"><h5>Why we do this</h5><p>A robot generates enormous quantities of unlabelled sensor data every second and almost no labelled data at all. That asymmetry &mdash; not any property of the algorithms &mdash; is what makes unsupervised methods indispensable in robotics.</p></div><div class="wq w2"><h5>Why not just do the simpler thing?</h5><p><b>&ldquo;Why not label the sensor data?&rdquo;</b> A single LiDAR scan is tens of thousands of 3-D points, produced ten times a second. Labelling even one minute of operation by hand is infeasible, and the robot must work in environments nobody labelled in advance.</p></div><div class="wq w3"><h5>What goes wrong if you skip it</h5><p>You use a method that cannot say <b>“I do not know”</b>. k-Means assigns every LiDAR return to some object, including returns from dust and rain &mdash; so the robot confidently perceives obstacles that are not there. DBSCAN's noise label is the whole reason it is preferred for this job.</p></div></div></div><div class="grid"><div class="card"><h4>Segmenting a LiDAR scan</h4><p>A scan is tens of thousands of unlabelled 3-D points. DBSCAN groups them into objects without being told how many objects there are, and marks sparse returns from dust or rain as noise &mdash; both properties matter here, which is why it is preferred to k-Means for this job.</p></div><div class="card"><h4>Compressing sensor streams</h4><p>A robot with dozens of correlated sensors can have that stream reduced by PCA to a handful of components that keep most of the variance, cutting bandwidth and downstream computation.</p></div><div class="card"><h4>Vector quantisation</h4><p>k-Means over image patches or sensor readings builds a codebook, turning a continuous signal into a small set of discrete symbols that a planner can reason about.</p></div><div class="card"><h4>Detecting a fault before it fails</h4><p>Fit the density of normal operation; a reading that falls in no dense region is flagged. No examples of the failure are needed &mdash; which is the point, since the failures you most care about are the ones that have not happened yet.</p></div></div><div class="take"><b class="hd">The common thread</b><br>Every one of these works because labels are expensive and unlabelled data is free. That asymmetry, rather than any property of the algorithms, is what makes unsupervised learning indispensable in robotics.</div><div class="ex"><div class="exhd">Worked example &mdash; choosing the right method for three robotics tasks</div><div class="exgiven">Each task is unsupervised. The right choice follows from one property of the task, not from which algorithm is most sophisticated.</div><ol class="exsteps"><li><div class="exb"><span class="exl">Segment a LiDAR scan into objects</span><span class="exw">number of objects is unknown and varies every frame; dust gives sparse spurious returns &#8594; needs no-<i>k</i> and a noise label &#8594; <b>DBSCAN</b></span></div></li><li><div class="exb"><span class="exl">Compress 40 correlated sensor channels before transmitting</span><span class="exw">want maximum information in fewest numbers, and it must be reversible &#8594; <b>PCA</b>, keeping enough components for ~95% variance</span></div></li><li><div class="exb"><span class="exl">Build a small vocabulary of recurring terrain patches</span><span class="exw">want a fixed number of representative prototypes &#8594; <b>k-Means</b>, where the <i>k</i> centroids become the codebook</span></div></li><li><div class="exb"><span class="exl">Detect a failing motor before it fails</span><span class="exw">no examples of the failure exist yet &#8594; fit the density of normal operation and flag whatever falls outside it</span></div></li><li><div class="exb"><span class="exl">The common thread</span><span class="exw">in every case labels are unavailable or impossible &mdash; not merely inconvenient</span></div></li></ol><div class="exans">Three tasks, three different algorithms, one reason: <b>what the task needs decides the method</b>. DBSCAN for shape and noise, PCA for reversible compression, k-Means for a fixed codebook.</div></div></div></section>
+<footer><div class="wrap">CSE252 &middot; Introduction to AI and Machine Learning &middot; Unit IV &mdash; Unsupervised Learning &mdash; Visual Walkthrough &middot;
+School of Computer Science &amp; Engineering &middot; Session 2026&ndash;27</div></footer>
+<script>
+
+"use strict";
+var NS="http://www.w3.org/2000/svg";
+var C={navy:"#182B49",cyan:"#0096C7",purple:"#5C2D91",orange:"#ED771F",
+       green:"#107C41",red:"#B42318",grey:"#9AA7B5",rule:"#D8DFE8",ice:"#7EC5E2"};
+function el(p,n,a){var e=document.createElementNS(NS,n);for(var k in a)e.setAttribute(k,a[k]);
+  p.appendChild(e);return e;}
+function clr(s){while(s.firstChild)s.removeChild(s.firstChild);}
+function line(s,A,B,col,w,dash){var l=el(s,"line",{x1:A.x,y1:A.y,x2:B.x,y2:B.y,
+  stroke:col,"stroke-width":w,"stroke-linecap":"round"});
+  if(dash)l.setAttribute("stroke-dasharray",dash);return l;}
+function dot(s,p,r,fill){return el(s,"circle",{cx:p.x,cy:p.y,r:r,fill:fill});}
+function nodeC(s,p,label,fill,r){r=r||17;
+  el(s,"circle",{cx:p.x,cy:p.y,r:r,fill:fill,stroke:"#fff","stroke-width":2.5});
+  var t=el(s,"text",{x:p.x,y:p.y+5,"text-anchor":"middle",fill:"#fff","font-size":"14",
+    "font-weight":"600","font-family":"Segoe UI,sans-serif"});t.textContent=label;}
+function txt(s,x,y,str,col,size,anchor,weight){
+  var t=el(s,"text",{x:x,y:y,"text-anchor":anchor||"middle",fill:col||C.navy,
+    "font-size":size||12,"font-weight":weight||"600","font-family":"Segoe UI,sans-serif"});
+  t.textContent=str;return t;}
+function box(s,x,y,w,h,fill,stroke,rx){return el(s,"rect",{x:x,y:y,width:w,height:h,
+  rx:rx===undefined?6:rx,fill:fill,stroke:stroke||"none","stroke-width":1.6});}
+function badge(s,A,B,str){var mx=(A.x+B.x)/2,my=(A.y+B.y)/2;
+  el(s,"circle",{cx:mx,cy:my,r:11,fill:"#fff",stroke:C.rule});
+  txt(s,mx,my+4,str,C.navy,12);}
+function arrow(s,A,B,col,w){
+  var dx=B.x-A.x,dy=B.y-A.y,L=Math.sqrt(dx*dx+dy*dy);if(!L)return;
+  var ux=dx/L,uy=dy/L,ex=B.x-ux*20,ey=B.y-uy*20;
+  el(s,"line",{x1:A.x+ux*20,y1:A.y+uy*20,x2:ex,y2:ey,stroke:col,"stroke-width":w||2.6,
+    "stroke-linecap":"round"});
+  var a=8;
+  el(s,"polygon",{points:[ex+","+ey,(ex-ux*a-uy*a*0.6)+","+(ey-uy*a+ux*a*0.6),
+    (ex-ux*a+uy*a*0.6)+","+(ey-uy*a-ux*a*0.6)].join(" "),fill:col});}
+
+/* ---- generic step player, wired to data-viz buttons ---- */
+var VIZ={};
+function register(id,build,render){
+  VIZ[id]={build:build,render:render,steps:[],i:0,timer:null};
+  resetViz(id);
+}
+function resetViz(id){var m=VIZ[id];if(!m)return;
+  m.steps=m.build();m.i=0;stopViz(id);drawViz(id);}
+function drawViz(id){var m=VIZ[id];
+  m.render(document.getElementById("svg-"+id),m.steps[m.i],m.i,m.steps);
+  var st=document.getElementById("st-"+id);
+  if(st)st.innerHTML=m.steps[m.i].msg||"";
+  syncViz(id);}
+/* keep the counter and the buttons honest about where we are */
+function syncViz(id){var m=VIZ[id],last=m.steps.length-1;
+  function btn(a){return document.querySelector(
+    'button[data-act="'+a+'"][data-viz="'+id+'"]');}
+  var b;
+  if((b=btn("step")))b.disabled=m.i>=last;
+  if((b=btn("back")))b.disabled=m.i<=0;
+  var sc=document.getElementById("sc-"+id);
+  if(sc)sc.innerHTML="step <em>"+m.i+"</em> of "+last;
+  var wrap=document.getElementById("wrap-"+id);
+  if(wrap){if(m.i>=last&&last>0)wrap.classList.add("done");
+           else wrap.classList.remove("done");}}
+function stepViz(id){var m=VIZ[id];
+  if(m.i<m.steps.length-1){m.i++;drawViz(id);}
+  if(m.i>=m.steps.length-1)stopViz(id);}
+/* step backwards, so a student can flip between before and after */
+function stepBackViz(id){var m=VIZ[id];
+  if(m.i>0){stopViz(id);m.i--;drawViz(id);}}
+function stopViz(id){var m=VIZ[id];if(m.timer){clearInterval(m.timer);m.timer=null;}
+  var b=document.querySelector('button[data-act="auto"][data-viz="'+id+'"]');
+  if(b)b.textContent="Auto-play";}
+/* ---- practice answers: reveal one, or all of a block ---- */
+document.addEventListener("click",function(e){
+  if(!e.target.closest)return;
+  var one=e.target.closest("button[data-ans]");
+  if(one){var p=document.getElementById(one.getAttribute("data-ans"));
+    if(p){var on=p.classList.toggle("on");
+      one.textContent=on?"Hide answer":"Show answer";}
+    return;}
+  var all=e.target.closest("button[data-all]");
+  if(all){var g=all.getAttribute("data-all"),
+      blk=all.closest(".prac"),show=all.textContent.indexOf("Show")===0;
+    blk.querySelectorAll(".pa").forEach(function(p){
+      p.classList.toggle("on",show);});
+    blk.querySelectorAll("button[data-ans]").forEach(function(b2){
+      b2.textContent=show?"Hide answer":"Show answer";});
+    all.textContent=show?"Hide all answers":"Show all answers";}
+});
+document.addEventListener("click",function(e){
+  var b=e.target.closest?e.target.closest("button[data-viz]"):null;if(!b)return;
+  var id=b.getAttribute("data-viz"),act=b.getAttribute("data-act"),m=VIZ[id];if(!m)return;
+  if(act==="step")stepViz(id);
+  else if(act==="back")stepBackViz(id);
+  else if(act==="reset")resetViz(id);
+  else if(act==="auto"){
+    if(m.timer){stopViz(id);return;}
+    if(m.i>=m.steps.length-1)resetViz(id);
+    b.textContent="Pause";
+    m.timer=setInterval(function(){if(m.i>=m.steps.length-1)stopViz(id);else stepViz(id);},950);
+  }});
+
+
+/* ---------- k-Means ---------- */
+(function(){
+  var P=[[1,1],[1.5,2],[3,4],[5,7],[3.5,5],[4.5,5],[3.5,4.5]],L="ABCDEFG";
+  function d2(a,b){return (a[0]-b[0])*(a[0]-b[0])+(a[1]-b[1])*(a[1]-b[1]);}
+  function build(){
+    var cen=[P[0].slice(),P[3].slice()],out=[],a=null;
+    out.push({cen:[cen[0].slice(),cen[1].slice()],a:null,phase:"init",
+      msg:"Two centres are placed on <b>A (1, 1)</b> and <b>D (5, 7)</b>. Nothing is assigned yet."});
+    for(var it=1;it<=6;it++){
+      a=P.map(function(p){return d2(p,cen[0])<=d2(p,cen[1])?0:1;});
+      var g0=L.split("").filter(function(_,i){return a[i]===0;}).join(", "),
+          g1=L.split("").filter(function(_,i){return a[i]===1;}).join(", ");
+      out.push({cen:[cen[0].slice(),cen[1].slice()],a:a.slice(),phase:"assign",it:it,
+        msg:"<b>Iteration "+it+" — assign.</b> Every point goes to its nearer centre: cluster 1 = {"+
+          g0+"}, cluster 2 = {"+g1+"}."});
+      var nc=[[0,0],[0,0]],cnt=[0,0];
+      for(var i=0;i<P.length;i++){nc[a[i]][0]+=P[i][0];nc[a[i]][1]+=P[i][1];cnt[a[i]]++;}
+      for(var k=0;k<2;k++)if(cnt[k]){nc[k][0]/=cnt[k];nc[k][1]/=cnt[k];}
+      var moved=Math.abs(nc[0][0]-cen[0][0])+Math.abs(nc[0][1]-cen[0][1])+
+                Math.abs(nc[1][0]-cen[1][0])+Math.abs(nc[1][1]-cen[1][1]);
+      if(moved<1e-9){
+        var sse=0;for(i=0;i<P.length;i++)sse+=d2(P[i],cen[a[i]]);
+        out.push({cen:[cen[0].slice(),cen[1].slice()],a:a.slice(),phase:"done",
+          msg:"<b>Converged</b> — the centres did not move, so the assignment cannot change either. Final SSE = <b>"+
+            sse.toFixed(3)+"</b>. Note how the left centre travelled from (1, 1) to ("+
+            cen[0][0].toFixed(2)+", "+cen[0][1].toFixed(2)+")."});
+        break;}
+      cen=nc;
+      out.push({cen:[cen[0].slice(),cen[1].slice()],a:a.slice(),phase:"update",it:it,
+        msg:"<b>Iteration "+it+" — update.</b> Each centre moves to the mean of its members: μ₁ = ("+
+          cen[0][0].toFixed(2)+", "+cen[0][1].toFixed(2)+"), μ₂ = ("+
+          cen[1][0].toFixed(2)+", "+cen[1][1].toFixed(2)+")."});}
+    return out;}
+  function render(svg,s){
+    clr(svg);var W=560,L0=54,B=272,T0=26,R=W-150;
+    function X(x){return L0+x/7*(R-L0);}
+    function Y(y){return B-y/8*(B-T0);}
+    for(var g=0;g<=7;g++)line(svg,{x:X(g),y:T0},{x:X(g),y:B},"#F0F4F8",1);
+    for(g=0;g<=8;g++)line(svg,{x:L0,y:Y(g)},{x:R,y:Y(g)},"#F0F4F8",1);
+    line(svg,{x:L0,y:B},{x:R,y:B},C.rule,1.6);line(svg,{x:L0,y:T0},{x:L0,y:B},C.rule,1.6);
+    var col=[C.cyan,C.purple];
+    if(s.a)for(var i=0;i<P.length;i++)
+      line(svg,{x:X(P[i][0]),y:Y(P[i][1])},{x:X(s.cen[s.a[i]][0]),y:Y(s.cen[s.a[i]][1])},
+           s.a[i]?"#DDD0EE":"#CFE7F3",1.6);
+    for(i=0;i<P.length;i++){
+      var c=s.a?col[s.a[i]]:"#AEB8C4";
+      dot(svg,{x:X(P[i][0]),y:Y(P[i][1])},7.5,c);
+      txt(svg,X(P[i][0]),Y(P[i][1])-13,L[i],c,11.5);}
+    for(var k2=0;k2<2;k2++){
+      var cx=X(s.cen[k2][0]),cy=Y(s.cen[k2][1]);
+      el(svg,"path",{d:"M"+(cx-9)+","+cy+"L"+cx+","+(cy-9)+"L"+(cx+9)+","+cy+"L"+cx+","+(cy+9)+"Z",
+        fill:col[k2],stroke:"#fff","stroke-width":2.4});
+      txt(svg,cx,cy+26,"μ"+(k2+1),col[k2],11.5);}
+    txt(svg,R+16,T0+16,s.phase==="assign"?"ASSIGN":(s.phase==="update"?"UPDATE":
+        (s.phase==="done"?"CONVERGED":"START")),
+        s.phase==="done"?C.green:(s.phase==="update"?C.orange:C.cyan),12,"start","700");
+    if(s.a){
+      var sse=0;for(i=0;i<P.length;i++)sse+=d2(P[i],s.cen[s.a[i]]);
+      txt(svg,R+16,T0+40,"SSE = "+sse.toFixed(3),C.navy,12,"start","600");}
+    txt(svg,W/2,B+28,"◆ = centroid     ● = data point",C.grey,11,"middle","400");}
+  register("km",build,render);
+})();
+/* ---------- hierarchical clustering ---------- */
+(function(){
+  var P=[[7,3.5],[9.5,5],[5,9.5],[5,1.5],[2,4.5]],L="PQRST";
+  var sel=document.getElementById("selLink");
+  function dist(a,b){return Math.sqrt((a[0]-b[0])*(a[0]-b[0])+(a[1]-b[1])*(a[1]-b[1]));}
+  function build(){
+    var mode=sel?sel.value:"single";
+    var cl=P.map(function(_,i){return{m:[i],name:L[i],h:0};}),out=[],steps=[];
+    out.push({cl:cl.map(function(c){return{m:c.m.slice(),name:c.name,h:c.h};}),steps:[],
+      msg:"Every point starts as its own cluster. <b>"+(mode==="single"?"Single":"Complete")+
+        " linkage</b>: the distance between two clusters is the "+
+        (mode==="single"?"<b>smallest</b>":"<b>largest</b>")+" distance between a member of one and a member of the other."});
+    while(cl.length>1){
+      var bi=0,bj=1,bd=Infinity;
+      for(var i=0;i<cl.length;i++)for(var j=i+1;j<cl.length;j++){
+        var ds=[];
+        cl[i].m.forEach(function(a){cl[j].m.forEach(function(b){ds.push(dist(P[a],P[b]));});});
+        var dd=mode==="single"?Math.min.apply(null,ds):Math.max.apply(null,ds);
+        if(dd<bd-1e-9){bd=dd;bi=i;bj=j;}}
+      var merged={m:cl[bi].m.concat(cl[bj].m),
+                  name:"("+cl[bi].name+cl[bj].name+")",h:bd,
+                  a:cl[bi],b:cl[bj]};
+      steps.push(merged);
+      var nc=[];for(i=0;i<cl.length;i++)if(i!==bi&&i!==bj)nc.push(cl[i]);
+      nc.push(merged);cl=nc;
+      out.push({cl:cl.map(function(c){return c;}),steps:steps.slice(),
+        msg:"Merge <b>"+merged.a.name+"</b> and <b>"+merged.b.name+"</b> at distance <b>"+
+          bd.toFixed(4)+"</b> → "+merged.name+". "+(cl.length>1?(cl.length+" clusters left."):
+          "One cluster left — the tree is complete.")});}
+    var last=out[out.length-1];
+    last.msg+=mode==="single"
+      ? " Notice the <b>chaining</b>: single linkage absorbed one point at a time into a growing blob."
+      : " Notice that complete linkage built <b>two balanced groups</b> first and joined them only at the end.";
+    return out;}
+  function render(svg,s){
+    clr(svg);var W=560,sx=24,sw=250,B=250,T0=52;
+    /* scatter on the left -- T0 leaves room for the caption above the top point */
+    function X(x){return sx+16+x/10*(sw-40);}
+    function Y(y){return B-y/10*(B-T0);}
+    line(svg,{x:X(0),y:B},{x:X(10),y:B},C.rule,1.4);
+    line(svg,{x:X(0),y:T0},{x:X(0),y:B},C.rule,1.4);
+    var cols=[C.cyan,C.purple,C.orange,C.green,C.red];
+    var owner={};
+    s.cl.forEach(function(c,ci){c.m.forEach(function(mi){owner[mi]=ci;});});
+    for(var i=0;i<P.length;i++){
+      var c=s.cl.length===P.length?"#AEB8C4":cols[owner[i]%5];
+      dot(svg,{x:X(P[i][0]),y:Y(P[i][1])},7,c);
+      txt(svg,X(P[i][0]),Y(P[i][1])-12,L[i],c,11.5);}
+    txt(svg,sx+sw/2,16,"the five points",C.grey,11.5);
+    /* dendrogram on the right */
+    var dx=sx+sw+40,dw=W-dx-26,maxh=8.2;
+    function DY(h){return B-h/maxh*(B-T0);}
+    line(svg,{x:dx-10,y:B},{x:W-14,y:B},C.rule,1.4);
+    line(svg,{x:dx-10,y:T0},{x:dx-10,y:B},C.rule,1.4);
+    for(var g=0;g<=8;g+=2){
+      txt(svg,dx-16,DY(g)+4,g,C.grey,9.5,"end","400");
+      line(svg,{x:dx-10,y:DY(g)},{x:W-14,y:DY(g)},"#F2F5F9",1);}
+    txt(svg,dx+dw/2,16,"dendrogram (height = merge distance)",C.grey,11.5);
+    /* leaf order from the completed tree */
+    var order=[],pos={};
+    (function flat(nd){ if(nd.a){flat(nd.a);flat(nd.b);} else order.push(nd.m[0]); })(
+      s.steps.length?s.steps[s.steps.length-1]:{m:[0]});
+    for(i=0;i<P.length;i++)if(order.indexOf(i)<0)order.push(i);
+    order.forEach(function(mi,q){pos[mi]=dx+10+q*(dw-20)/(P.length-1);});
+    function xy(nd){
+      if(!nd.a)return{x:pos[nd.m[0]],y:B};
+      var A=xy(nd.a),Bp=xy(nd.b),yy=DY(nd.h);
+      return{x:(A.x+Bp.x)/2,y:yy,A:A,B:Bp};}
+    s.steps.forEach(function(nd,q){
+      var r=xy(nd),col=cols[q%5];
+      line(svg,{x:r.A.x,y:r.A.y},{x:r.A.x,y:r.y},col,2.4);
+      line(svg,{x:r.B.x,y:r.B.y},{x:r.B.x,y:r.y},col,2.4);
+      line(svg,{x:r.A.x,y:r.y},{x:r.B.x,y:r.y},col,2.4);
+      txt(svg,(r.A.x+r.B.x)/2,r.y-6,nd.h.toFixed(2),col,9.5,"middle","700");});
+    order.forEach(function(mi){txt(svg,pos[mi],B+16,L[mi],C.navy,12);});}
+  register("hier",build,render);
+  if(sel)sel.addEventListener("change",function(){resetViz("hier");});
+})();
+/* ---------- DBSCAN ---------- */
+(function(){
+  var P=[[8,5.5],[1.5,8],[8.5,5],[8.5,3.5],[7.5,6],[1.5,9],[2,8.5],[3.5,2]],
+      L="ABCDEFGH",EPS=1.5,MIN=3;
+  function dist(a,b){return Math.sqrt((a[0]-b[0])*(a[0]-b[0])+(a[1]-b[1])*(a[1]-b[1]));}
+  function nbrs(i){var r=[];for(var j=0;j<P.length;j++)if(dist(P[i],P[j])<=EPS+1e-9)r.push(j);return r;}
+  function build(){
+    var kind={},out=[];
+    out.push({kind:{},focus:-1,
+      msg:"ε = 1.5, minPts = 3. For each point we count how many points lie within ε — <b>including the point itself</b>."});
+    for(var i=0;i<P.length;i++){
+      var nb=nbrs(i),isCore=nb.length>=MIN;
+      if(isCore)kind[i]="core";
+      out.push({kind:JSON.parse(JSON.stringify(kind)),focus:i,ring:true,
+        msg:"N<sub>ε</sub>("+L[i]+") = {"+nb.map(function(j){return L[j];}).join(", ")+
+          "}, so |N| = <b>"+nb.length+"</b> "+(isCore?"≥":"&lt;")+" 3 → "+
+          (isCore?"<b>core point</b>.":"not a core point — decide later whether it is border or noise.")});}
+    for(i=0;i<P.length;i++){
+      if(kind[i])continue;
+      var nb2=nbrs(i),cores=nb2.filter(function(j){return kind[j]==="core";});
+      kind[i]=cores.length?"border":"noise";
+      out.push({kind:JSON.parse(JSON.stringify(kind)),focus:i,ring:true,
+        msg:cores.length
+          ?("<b>"+L[i]+"</b> is not core, but core point <b>"+L[cores[0]]+
+            "</b> lies within ε of it → <b>border point</b>. It joins that cluster but cannot be used to expand it.")
+          :("<b>"+L[i]+"</b> is not core and no core point is within ε of it → <b>noise</b>. DBSCAN leaves it in no cluster at all.")});}
+    /* cluster the cores */
+    var lab={},cid=0;
+    for(i=0;i<P.length;i++){
+      if(kind[i]!=="core"||lab[i]!==undefined)continue;
+      cid++;var st=[i];
+      while(st.length){var u=st.pop();
+        if(lab[u]!==undefined)continue;lab[u]=cid;
+        nbrs(u).forEach(function(w){if(kind[w]==="core"&&lab[w]===undefined)st.push(w);});}}
+    for(i=0;i<P.length;i++)if(kind[i]==="border"){
+      var cs=nbrs(i).filter(function(j){return kind[j]==="core";});
+      lab[i]=lab[cs[0]];}
+    var g1=[],g2=[],nz=[];
+    for(i=0;i<P.length;i++)(lab[i]===1?g1:lab[i]===2?g2:nz).push(L[i]);
+    out.push({kind:JSON.parse(JSON.stringify(kind)),focus:-1,lab:lab,
+      msg:"<b>Done.</b> Two clusters: {"+g1.join(", ")+"} and {"+g2.join(", ")+
+        "}; noise: {"+nz.join(", ")+"}. k was never specified — the density decided it."});
+    return out;}
+  function render(svg,s){
+    clr(svg);var W=560,L0=54,B=272,T0=26,R=W-130;
+    function X(x){return L0+x/10*(R-L0);}
+    function Y(y){return B-y/10*(B-T0);}
+    for(var g=0;g<=10;g+=2){
+      line(svg,{x:X(g),y:T0},{x:X(g),y:B},"#F0F4F8",1);
+      line(svg,{x:L0,y:Y(g)},{x:R,y:Y(g)},"#F0F4F8",1);}
+    line(svg,{x:L0,y:B},{x:R,y:B},C.rule,1.6);line(svg,{x:L0,y:T0},{x:L0,y:B},C.rule,1.6);
+    var CK={core:C.cyan,border:C.orange,noise:C.red};
+    if(s.focus>=0&&s.ring){
+      var rr=EPS/10*(R-L0);
+      el(svg,"circle",{cx:X(P[s.focus][0]),cy:Y(P[s.focus][1]),r:rr,fill:"rgba(0,150,199,.09)",
+        stroke:C.cyan,"stroke-width":1.6,"stroke-dasharray":"4 3"});}
+    for(var i=0;i<P.length;i++){
+      var c=s.kind[i]?CK[s.kind[i]]:"#C8D2DC";
+      dot(svg,{x:X(P[i][0]),y:Y(P[i][1])},s.focus===i?9.5:7.5,c);
+      if(s.focus===i)el(svg,"circle",{cx:X(P[i][0]),cy:Y(P[i][1]),r:13,fill:"none",
+        stroke:C.navy,"stroke-width":1.8});
+      txt(svg,X(P[i][0]),Y(P[i][1])-14,L[i],c,11.5);}
+    if(s.lab){
+      txt(svg,R+14,T0+18,"clusters found",C.grey,11,"start","600");
+      txt(svg,R+14,T0+46,"2",C.green,20,"start","700");
+      txt(svg,R+14,T0+66,"+ noise",C.red,10.5,"start","600");}
+    txt(svg,W/2,B+28,"dashed ring = the ε-neighbourhood being counted",C.grey,11,"middle","400");}
+  register("dbs",build,render);
+})();
+/* ---------- PCA ---------- */
+(function(){
+  var X=[[1,1],[2,3],[3,2],[4,5],[5,4]],mx=3,my=3;
+  var sl=document.getElementById("pcaSlider"),lab=document.getElementById("pcaVal"),
+      svg=document.getElementById("svg-pca"),st=document.getElementById("st-pca");
+  function draw(){
+    var deg=+sl.value,th=deg*Math.PI/180,ux=Math.cos(th),uy=Math.sin(th);
+    lab.textContent=deg+"°";clr(svg);
+    var W=560,L0=56,B=258,T0=24,R=W-168;
+    function PX(x){return L0+(x+3)/6*(R-L0);}
+    function PY(y){return B-(y+3)/6*(B-T0);}
+    for(var g=-3;g<=3;g++){
+      line(svg,{x:PX(g),y:T0},{x:PX(g),y:B},"#F0F4F8",1);
+      line(svg,{x:L0,y:PY(g)},{x:R,y:PY(g)},"#F0F4F8",1);}
+    line(svg,{x:L0,y:PY(0)},{x:R,y:PY(0)},C.rule,1.4);
+    line(svg,{x:PX(0),y:T0},{x:PX(0),y:B},C.rule,1.4);
+    /* the candidate direction */
+    line(svg,{x:PX(-3*ux),y:PY(-3*uy)},{x:PX(3*ux),y:PY(3*uy)},C.orange,2.6);
+    var proj=[],sum2=0;
+    X.forEach(function(p){
+      var cx=p[0]-mx,cy=p[1]-my,t=cx*ux+cy*uy;
+      proj.push(t);sum2+=t*t;
+      line(svg,{x:PX(cx),y:PY(cy)},{x:PX(t*ux),y:PY(t*uy)},"#E4D7C6",1.5,"3 3");
+      dot(svg,{x:PX(t*ux),y:PY(t*uy)},5,C.orange);
+      dot(svg,{x:PX(cx),y:PY(cy)},7.5,C.cyan);});
+    var vr=sum2/(X.length-1);
+    txt(svg,W/2,B+26,"cyan = centred data   orange = its shadow on the orange line",
+        C.grey,11,"middle","400");
+    /* variance meter */
+    var bx=R+20,bw=108;
+    txt(svg,bx,T0+14,"variance along",C.grey,10.5,"start","600");
+    txt(svg,bx,T0+28,"this direction",C.grey,10.5,"start","600");
+    box(svg,bx,T0+38,bw,18,"#F0F2F5",null,9);
+    box(svg,bx,T0+38,Math.max(3,bw*vr/4.5),18,vr>4.4?C.green:C.orange,null,9);
+    txt(svg,bx,T0+74,vr.toFixed(4),vr>4.4?C.green:C.navy,19,"start","700");
+    txt(svg,bx,T0+94,"max is 4.5",C.grey,10.5,"start","400");
+    txt(svg,bx,T0+128,"λ₁ = 4.5  (90%)",C.cyan,11,"start","700");
+    txt(svg,bx,T0+146,"λ₂ = 0.5  (10%)",C.purple,11,"start","700");
+    var near=Math.abs(((deg%180)+180)%180-45)<1.5;
+    st.innerHTML="At <b>θ = "+deg+"°</b> the projected variance is <b>"+vr.toFixed(4)+
+      "</b>. "+(near?"This is the maximum — θ = 45° is the first principal component, u₁ = (0.7071, 0.7071), and the variance there equals the top eigenvalue λ₁ = <b>4.5</b>, which is <b>90%</b> of the total spread of 5.0."
+        :"Keep turning: the maximum is at 45°, where the variance reaches 4.5.");}
+  sl.addEventListener("input",draw);draw();
+})();
+/* ---------- Apriori ---------- */
+(function(){
+  var NAME={B:"Bread",M:"Milk",U:"Butter",J:"Jam",E:"Eggs"};
+  var T=["EJ","BJMU","EU","EMU","BJMU","BJU","JM"].map(function(s){return s.split("");}),
+      MIN=3,ITEMS="BEJMU".split("");
+  function sup(set){var c=0;T.forEach(function(t){
+    if(set.every(function(x){return t.indexOf(x)>=0;}))c++;});return c;}
+  function key(a){return a.slice().sort().join("");}
+  function build(){
+    var out=[],Lk=ITEMS.map(function(i){return[i];}),k=1,all=[];
+    out.push({lv:[],cand:[],k:0,
+      msg:"Seven baskets, minimum support <b>3</b>. Apriori works level by level: count the singletons, keep the frequent ones, and build the next level only from those."});
+    while(Lk.length){
+      var counted=Lk.map(function(s){return{s:s,c:sup(s)};});
+      var keep=counted.filter(function(o){return o.c>=MIN;});
+      out.push({lv:all.slice(),cand:counted,k:k,phase:"count",
+        msg:"<b>Level "+k+" — count.</b> "+counted.map(function(o){
+          return "{"+key(o.s)+"} = "+o.c;}).join(", ")+"."});
+      var pruned=counted.filter(function(o){return o.c<MIN;});
+      out.push({lv:all.slice(),cand:counted,keep:keep.map(function(o){return key(o.s);}),k:k,phase:"prune",
+        msg:pruned.length
+          ?("<b>Prune.</b> "+pruned.map(function(o){return "{"+key(o.s)+"} = "+o.c;}).join(", ")+
+            " fall below 3 and are dropped. By the Apriori principle every superset of them is infrequent too, so none of those will ever be counted.")
+          :"<b>Prune.</b> Every candidate at this level clears the threshold, so nothing is dropped."});
+      all=all.concat(keep.map(function(o){return{s:o.s,c:o.c,k:k};}));
+      /* join step */
+      var nxt=[],seen={};
+      for(var i=0;i<keep.length;i++)for(var j=i+1;j<keep.length;j++){
+        var u={},arr=[];
+        keep[i].s.concat(keep[j].s).forEach(function(x){if(!u[x]){u[x]=1;arr.push(x);}});
+        if(arr.length!==k+1)continue;
+        var kk=key(arr);if(seen[kk])continue;
+        /* every k-subset must be frequent */
+        var ok=true;
+        for(var q=0;q<arr.length;q++){
+          var sub=arr.slice();sub.splice(q,1);
+          if(keep.map(function(o){return key(o.s);}).indexOf(key(sub))<0){ok=false;break;}}
+        if(!ok)continue;
+        seen[kk]=1;nxt.push(arr.sort());}
+      if(!nxt.length){
+        out.push({lv:all.slice(),cand:[],k:k,phase:"end",
+          msg:"<b>No level-"+(k+1)+" candidates survive the join.</b> The search stops. The largest frequent itemset is <b>{Bread, Jam, Butter}</b> with support 3/7."});
+        break;}
+      out.push({lv:all.slice(),cand:nxt.map(function(s){return{s:s,c:null};}),k:k+1,phase:"join",
+        msg:"<b>Join → level "+(k+1)+".</b> Combine the survivors in pairs: "+
+          nxt.map(function(s){return "{"+key(s)+"}";}).join(", ")+
+          ". Only these need counting — everything else is already ruled out."});
+      Lk=nxt;k++;}
+    return out;}
+  function render(svg,s){
+    clr(svg);var W=560;
+    txt(svg,W/2,22,"frequent itemsets found so far",C.grey,11.5);
+    var y=42;
+    for(var lev=1;lev<=3;lev++){
+      var row=s.lv.filter(function(o){return o.k===lev;});
+      if(!row.length)continue;
+      txt(svg,28,y+18,"L"+lev,C.grey,11,"start","700");
+      var x=62;
+      row.forEach(function(o){
+        var lbl=key(o.s),w=Math.max(44,lbl.length*13+26);
+        box(svg,x,y,w,26,"#E4F6EB",C.green,5);
+        txt(svg,x+w/2,y+18,lbl+" :"+o.c,C.navy,11.5);x+=w+8;});
+      y+=34;}
+    if(!s.lv.length)txt(svg,W/2,y+14,"(none yet)",C.grey,11.5,"middle","400");
+    /* candidates under consideration */
+    y=Math.max(y+16,150);
+    txt(svg,W/2,y,s.phase==="join"?("level "+s.k+" candidates — generated, not yet counted")
+        :(s.phase==="prune"?"level "+s.k+" after pruning":"level "+s.k+" candidates being counted"),
+        s.phase==="join"?C.purple:C.orange,11.5);
+    y+=12;var x2=46,row2=0;
+    (s.cand||[]).forEach(function(o,q){
+      var lbl=key(o.s),w=Math.max(48,lbl.length*13+34);
+      if(x2+w>W-30){x2=46;row2++;}
+      var dead=s.phase==="prune"&&s.keep&&s.keep.indexOf(lbl)<0;
+      box(svg,x2,y+row2*32,w,26,dead?"#FBE9E7":(o.c===null?"#F3EEFB":"#FDEBD9"),
+          dead?C.red:(o.c===null?C.purple:C.orange),5);
+      txt(svg,x2+w/2,y+18+row2*32,lbl+(o.c===null?"":" :"+o.c),dead?C.red:C.navy,11.5);
+      if(dead)line(svg,{x:x2+5,y:y+13+row2*32},{x:x2+w-5,y:y+13+row2*32},C.red,1.8);
+      x2+=w+8;});
+    /* the baskets */
+    var ty=288;
+    txt(svg,28,ty,"baskets:",C.grey,10.5,"start","700");
+    T.forEach(function(t,q){
+      txt(svg,92+q*66,ty,"T"+(q+1)+" "+key(t),C.navy,10,"start","600");});}
+  register("apri",build,render);
+})();
+/* ---------- confidence vs lift ---------- */
+(function(){
+  var svg=document.getElementById("svg-rules"),st=document.getElementById("st-rules");
+  var R=[{a:"Bread",c:"Jam, Butter",s:3/7,conf:1.00,lift:2.33},
+         {a:"Jam",c:"Bread",s:3/7,conf:0.60,lift:1.40},
+         {a:"Jam",c:"Butter",s:3/7,conf:0.60,lift:0.84}];
+  var W=560,x0=168,bw=W-x0-96;
+  txt(svg,x0-12,24,"rule",C.grey,11,"end","700");
+  txt(svg,x0+bw/2,24,"lift",C.grey,11,"middle","700");
+  line(svg,{x:x0+bw/2,y:34},{x:x0+bw/2,y:212},C.rule,1.6,"4 3");
+  txt(svg,x0+bw/2,226,"lift = 1  (independent)",C.grey,10,"middle","400");
+  R.forEach(function(r,i){
+    var y=54+i*52;
+    txt(svg,x0-12,y+16,r.a+" → "+r.c,C.navy,11,"end","600");
+    txt(svg,x0-12,y+30,"conf "+r.conf.toFixed(2),C.grey,10,"end","400");
+    var good=r.lift>1.05,half=bw/2;
+    var len=Math.min(half-6,(r.lift-1)/1.5*half);
+    if(good)box(svg,x0+half,y+4,Math.max(4,len),24,C.green,null,4);
+    else box(svg,x0+half-Math.max(4,-len),y+4,Math.max(4,-len),24,C.red,null,4);
+    txt(svg,good?(x0+half+Math.max(4,len)+8):(x0+half-Math.max(4,-len)-8),y+21,
+        r.lift.toFixed(2),good?C.green:C.red,13,good?"start":"end","700");});
+  st.innerHTML="All three rules have respectable support. <b>Bread &rarr; Jam, Butter</b> has "+
+    "confidence 1.00 <i>and</i> lift 2.33 — a real pattern. But <b>Jam &rarr; Butter</b> and "+
+    "<b>Jam &rarr; Bread</b> have the <i>same</i> confidence of 0.60, and only one of them is "+
+    "worth anything: butter appears in 5 of 7 baskets anyway, so knowing about jam makes it "+
+    "<b>less</b> likely (lift 0.84), while bread appears in only 3, so jam genuinely predicts it "+
+    "(lift 1.40).";
+})();
+
+</script>
+</body>
+</html>
